@@ -86,6 +86,12 @@ Android Gradle Plugin's C++ specific responsibilities are:
     ```
 The result of (2) is typically a set of .so files that can be packaged into the final APK.
 
+Clean:
+   ```bash
+    ./gradlew clean
+    ```
+Will not remove the generated Ninja project but it will delete .o files in that project.
+
 ## Build HelloWorld Sample
 ### Build Prerequisites
 Android Gradle Plugin C/C++ has two prerequisites that typical Java\Kotlin
