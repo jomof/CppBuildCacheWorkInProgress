@@ -29,7 +29,7 @@ The Ninja project is meant to be reused across clean calls so, in our case, it's
 outside the normal build/ folder in a folder named .cxx/.
 
 Resources:
-- [ninja.org](ninja.org)
+- [ninja.org](https://ninja.org)
 - Ninja build files for our HelloWorld project:
   HelloWorld/app/.cxx/Debug/3z5c3158/x86/build.ninja
   HelloWorld/app/.cxx/Debug/3z5c3158/x86/CMakeFiles/rules.ninja
@@ -67,7 +67,7 @@ projects don't have.
 1) NDK contains clang++.exe for Android along with headers and libraries.
    NDK version matters and HelloWorld project in this repo uses version 21.4.7075529
 
-2) An external native build system. This project uses CMake[CMake.org] but there
+2) An external native build system. This project uses [CMake](cmake.org) but there
    is also a build system in the NDK specifically for Android called 'ndk-build'.
    The HelloWorld project uses version 3.18.1 of CMake.
 
