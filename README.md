@@ -1,4 +1,4 @@
-# Simple C/C++ Build Mostly From Scratch
+# Mostly From Scratch Guide to Android C++ Build
 This repo describes the Android Gradle C++ build process from the perspective of 
 someone who knows Gradle, Android Java build, and basics of C/C++ development but without
 knowing the Android specific build aspects.
