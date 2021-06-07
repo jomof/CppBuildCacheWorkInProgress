@@ -8,7 +8,7 @@ Major elements of this repo:
   Relevant build outputs that wouldn't usually be checked in are also here you can see 
   where they are and what they look like relative to other files in the build. 
 - [A Github Action that sets up prerequisites and builds it](https://github.com/jomof/CppBuildCacheWorkInProgress/actions)
-- Sources for Android Gradle Plugin that approximately match the one referenced by HelloWorld
+- [Sources for Android Gradle Plugin that approximately match the one referenced by HelloWorld (7.1.0-alpha01)](https://github.com/jomof/CppBuildCacheWorkInProgress/tree/main/agp-7.1.0-alpha01/tools/base_
 - [A work-in-progress pull request that adds C++ caching](https://github.com/jomof/CppBuildCacheWorkInProgress/pull/1/commits/a8396904f76b7aa93c38e20d6497eacae5c990c4)
 - Details of the pieces of the build system below in this README.
 
