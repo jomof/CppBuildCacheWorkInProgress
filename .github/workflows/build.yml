@@ -28,14 +28,14 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
-  steps:
-  - name: Install NDK
-    run: ${{ matrix.call_sdk_manager }} "ndk;21.4.7075529"
+    steps:
+    - name: Install NDK
+      run: ${{ matrix.call_sdk_manager }} "ndk;21.4.7075529"
 
-  - name: Install CMake
-    run: ${{ matrix.call_sdk_manager }} "cmake;3.18.1"
+    - name: Install CMake
+      run: ${{ matrix.call_sdk_manager }} "cmake;3.18.1"
 
-  - name: Gradle Build
-    run: |
+    - name: Gradle Build
+      run: |
       cd HelloWorld
       ${{ matrix.call_gradle }} assemble 
