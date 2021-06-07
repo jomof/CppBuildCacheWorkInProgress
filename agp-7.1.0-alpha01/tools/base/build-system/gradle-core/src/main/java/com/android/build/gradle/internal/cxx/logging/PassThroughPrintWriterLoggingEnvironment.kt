@@ -29,7 +29,7 @@ class PassThroughPrintWriterLoggingEnvironment(
     private val parent : LoggingEnvironment = parentLogger()
 
     override fun log(message: LoggingMessage) {
-        log.println(prefix + message.toString())
+        log.println(prefix + message.text())
         parent.log(message)
     }
 

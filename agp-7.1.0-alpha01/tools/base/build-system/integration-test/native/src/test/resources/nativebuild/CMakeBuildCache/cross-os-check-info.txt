@@ -1,0 +1,2 @@
+# C/C++ build hash is expected to change when NDK version is updated, but it should not vary between host OSes
+cxx/hello-jni.c.o/object/x86_64-android21/-O0/ee7a0d8a14c4cdbbcbf335ecb2dfc549

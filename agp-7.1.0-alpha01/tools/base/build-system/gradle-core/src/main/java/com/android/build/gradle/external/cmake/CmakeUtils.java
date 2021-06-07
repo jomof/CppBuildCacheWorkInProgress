@@ -117,6 +117,16 @@ public class CmakeUtils {
         return ImmutableList.<String>builder()
                 .add(getNinjaExecutable(cmakeExecutable))
                 .addAll(buildCommandArgs)
+                /*
+                .add("-d")
+                .add("stats")
+                .add("-d")
+                .add("explain")
+                .add("-d")
+                .add("keepdepfile")
+                .add("-d")
+                .add("keeprsp")
+                 */
                 .add("-C")
                 .add(outputFolder.getAbsolutePath())
                 .add(CxxRegularBuilder.BUILD_TARGETS_PLACEHOLDER)

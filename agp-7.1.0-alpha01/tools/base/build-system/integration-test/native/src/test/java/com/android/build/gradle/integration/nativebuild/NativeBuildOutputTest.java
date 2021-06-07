@@ -172,6 +172,7 @@ public class NativeBuildOutputTest {
     }
 
     // Related to b.android.com/219899 -- no libraries in CMake caused a NullReferenceException
+    // flapjack dummy
     @Test
     public void checkCMakeNoLibraries() throws Exception {
         TestFileUtils.appendToFile(

@@ -16,7 +16,6 @@
 
 package com.android.build.gradle.integration.nativebuild
 
-import com.android.SdkConstants
 import com.android.build.gradle.integration.common.fixture.BaseGradleExecutor
 import com.android.build.gradle.integration.common.fixture.GradleBuildResult
 import com.android.build.gradle.integration.common.fixture.GradleTestProject
@@ -63,6 +62,7 @@ import org.junit.Assume
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import java.io.File
@@ -77,8 +77,14 @@ class CmakeBasicProjectTest(
 ) {
     @Rule
     @JvmField
+    val temporaryFolder = TemporaryFolder()
+
+    @Rule
+    @JvmField
     val project = GradleTestProject.builder()
         .fromTestApp(HelloWorldJniApp.builder().withNativeDir("cxx").withCmake().build())
+        // TODO Remove
+        //.withGradleBuildCacheDirectory(File("/Users/jomof/projects/test-cache"))
         // TODO(b/159233213) Turn to ON when release configuration is cacheable
         .withConfigurationCaching(BaseGradleExecutor.ConfigurationCaching.WARN)
         .setSideBySideNdkVersion(DEFAULT_NDK_SIDE_BY_SIDE_VERSION)
@@ -140,8 +146,12 @@ class CmakeBasicProjectTest(
     /**
      * Helper function that controls arguments when running a task
      */
-    private fun runTasks(vararg tasks : String): GradleBuildResult? {
-        return project.executor().withArgument("--build-cache").run(*tasks)
+    private fun runTasks(vararg params : String): GradleBuildResult? {
+        val (args, tasks) = params.partition { it.startsWith("-") }
+        return project.executor()
+            .withArgument("--build-cache")
+            .withArguments(args)
+            .run(tasks)
     }
 
     // Regression test for b/179062268
@@ -160,7 +170,7 @@ class CmakeBasicProjectTest(
                 }
             """.trimIndent()
         )
-        project.execute("clean", "assembleRelease")
+        runTasks("clean", "assembleRelease")
         assertThat(project.getIntermediateFile("default_proguard_files/global")).exists()
     }
 
@@ -199,13 +209,13 @@ class CmakeBasicProjectTest(
             """.trimIndent())
         TestFileUtils.appendToFile(project.buildFile, moduleBody("root/CMakeLists.txt"))
 
-        project.execute("assemble")
+        runTasks("assemble")
 
         // Rename the target
         leafCmakeLists.writeText(leafCmakeLists.readText().replace("hello-jni", "hello-jni-renamed"))
 
         // Assemble again
-        project.execute("assemble")
+        runTasks("assemble")
     }
 
     @Test
@@ -238,11 +248,11 @@ class CmakeBasicProjectTest(
         //
         // To recreate those conditions, build the project twice, purging only the .cxx directory
         // between runs.
-        project.execute("assembleDebug")
+        runTasks("assembleDebug")
         val abi = project.recoverExistingCxxAbiModels().single { it.abi == Abi.ARMEABI_V7A }
         project.projectDir.resolve(".cxx").deleteRecursively()
         assertThat(abi.soFolder.resolve("libfoo.so")).isFile()
-        project.execute("assembleDebug")
+        runTasks("assembleDebug")
     }
 
 
@@ -292,7 +302,7 @@ class CmakeBasicProjectTest(
             target_link_libraries(bar foo baz)
             """.trimIndent())
 
-        project.execute("generateJsonModelDebug")
+        runTasks("generateJsonModelDebug")
 
         val abi = project.recoverExistingCxxAbiModels().single { it.abi == Abi.X86_64 }
         val fooPath = abi.soFolder.resolve("libfoo.so")
@@ -301,13 +311,13 @@ class CmakeBasicProjectTest(
         val json = abi.jsonFile
         assertThat(json).isFile()
 
-        val config = AndroidBuildGradleJsons.getNativeBuildMiniConfig(abi, null)
+        val config = getNativeBuildMiniConfig(abi, null)
         val library = config
-                .libraries
-                .asSequence()
-                .filter { it.key.contains("bar") }
-                .single()
-                .value
+            .libraries
+            .asSequence()
+            .filter { it.key.contains("bar") }
+            .single()
+            .value
         assertThat(library.runtimeFiles).containsExactly(fooPath)
     }
 
@@ -337,7 +347,7 @@ class CmakeBasicProjectTest(
 
     @Test
     fun checkApkContent() {
-        project.execute("clean", "assembleDebug")
+        runTasks("clean", "assembleDebug")
         val apk = project.getApk(GradleTestProject.ApkType.DEBUG)
         assertThatApk(apk).hasVersionCode(1)
         assertThatApk(apk).contains("lib/armeabi-v7a/libhello-jni.so")
@@ -365,9 +375,8 @@ class CmakeBasicProjectTest(
 
     @Test
     fun `build product golden locations`() {
-        project.execute("assembleDebug")
+        runTasks("assembleDebug")
         val golden = project.goldenBuildProducts()
-        println(golden)
         Truth.assertThat(golden).isEqualTo("""
             {PROJECT}/.cxx/{DEBUG}/armeabi-v7a/CMakeFiles/hello-jni.dir/src/main/cxx/hello-jni.c.o{F}
             {PROJECT}/.cxx/{DEBUG}/x86_64/CMakeFiles/hello-jni.dir/src/main/cxx/hello-jni.c.o{F}
@@ -412,17 +421,17 @@ class CmakeBasicProjectTest(
     fun checkModelSingleVariant() {
         // Request build details for debug-x86_64
         val fetchResult =
-          project.modelV2().fetchNativeModules(NativeModuleParams(listOf("debug"), listOf("x86_64")))
+            project.modelV2().fetchNativeModules(NativeModuleParams(listOf("debug"), listOf("x86_64")))
 
         val additionalProjectFileStatus = if (cmakeVersionInDsl == "3.6.0") {
-          // CMake 3.6 does not populate additional files known by it.
+            // CMake 3.6 does not populate additional files known by it.
             "!"
         } else {
             "F"
         }
         // note that only build files for the requested variant and ABI exists.
         Truth.assertThat(fetchResult.dump()).isEqualTo(
-          """[:]
+            """[:]
 > NativeModule:
    - name                    = "project"
    > variants:
@@ -467,7 +476,7 @@ class CmakeBasicProjectTest(
     fun checkModel() {
         val fetchResult = project.modelV2().fetchNativeModules(NativeModuleParams(emptyList(), emptyList()))
         Truth.assertThat(fetchResult.dump()).isEqualTo(
-          """[:]
+            """[:]
 > NativeModule:
    - name                    = "project"
    > variants:
@@ -512,7 +521,7 @@ class CmakeBasicProjectTest(
     fun checkClean() {
         lateinit var modelV2: NativeModule
         // Build the project.
-        project.execute("clean", "assembleDebug", "assembleRelease")
+        runTasks("clean", "assembleDebug", "assembleRelease")
 
         // We specify to not generate the build information for any variants or ABIs here.
         val result = project.modelV2().fetchNativeModules(NativeModuleParams(emptyList(), emptyList()))
@@ -526,7 +535,7 @@ class CmakeBasicProjectTest(
         }
         // The files still appear to exist because we have already built the project.
         Truth.assertThat(result.dump()).isEqualTo(
-          """[:]
+            """[:]
 > NativeModule:
    - name                    = "project"
    > variants:
@@ -577,14 +586,14 @@ class CmakeBasicProjectTest(
         Truth.assertThat(outputFiles.toSet()).containsExactly("libhello-jni.so")
 
 
-        project.execute("clean")
+        runTasks("clean")
 
         outputFiles.forEach { file -> assertThat(File(file)).doesNotExist() }
     }
 
     @Test
     fun checkCleanAfterAbiSubset() {
-        project.execute("clean", "assembleDebug", "assembleRelease")
+        runTasks("clean", "assembleDebug", "assembleRelease")
         val buildOutputs = run {
             val result = project.modelV2().fetchNativeModules(NativeModuleParams(emptyList(), emptyList()))
             val nativeModule = result.container.singleNativeModule
@@ -601,24 +610,20 @@ class CmakeBasicProjectTest(
 
         // Change the build file to only have "x86_64"
         TestFileUtils.appendToFile(
-          project.buildFile,
-          """
-apply plugin: 'com.android.application'
-
-    android {
-        defaultConfig {
-          externalNativeBuild {
-              cmake {
-                abiFilters.clear();
-                abiFilters.addAll("x86_64");
-              }
-          }
-        }
-    }
-
-"""
-        )
-        project.execute("clean")
+            project.buildFile,
+            """
+            android {
+                defaultConfig {
+                  externalNativeBuild {
+                      cmake {
+                        abiFilters.clear();
+                        abiFilters.addAll("x86_64");
+                      }
+                  }
+                }
+            }
+        """.trimIndent())
+        runTasks("clean")
 
         // All build outputs should no longer exist, even the non-x86 outputs
         for (output in buildOutputs) {
@@ -714,7 +719,7 @@ apply plugin: 'com.android.application'
         for (variant in nativeModule.variants) {
             for (abi in variant.abis) {
                 Truth.assertThat(abi.sourceFlagsFile.readCompileCommandsJsonBin(nativeModules.normalizer))
-                        .hasSize(1)
+                    .hasSize(1)
             }
         }
     }

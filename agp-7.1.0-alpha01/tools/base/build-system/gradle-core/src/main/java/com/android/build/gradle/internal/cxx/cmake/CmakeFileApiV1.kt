@@ -196,6 +196,8 @@ fun readCmakeFileApiReply(
                                 }.add(File(item.path).extension)
                             }
 
+                            val target = targetIdToNativeLibraryValue.getValue(id).artifactName!!
+
                             sourceFlagAction(
                                     CmakeFileApiSourceFile(
                                             rootSourceFolder = rootSourceFolder,

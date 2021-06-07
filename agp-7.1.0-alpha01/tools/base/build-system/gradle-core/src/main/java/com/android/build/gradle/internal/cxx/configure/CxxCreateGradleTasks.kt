@@ -54,6 +54,7 @@ import com.android.builder.errors.IssueReporter
 import com.android.prefs.AndroidLocationsProvider
 import com.android.utils.appendCapitalized
 import org.gradle.api.Task
+import org.gradle.api.services.BuildServiceRegistry
 import org.gradle.api.tasks.TaskProvider
 
 /**
@@ -114,7 +115,8 @@ fun <VariantBuilderT : ComponentBuilderImpl, VariantT : VariantImpl> createCxxTa
                                             variant,
                                             name)
                                 } else {
-                                    createWorkingCxxBuildTask(global,
+                                    createWorkingCxxBuildTask(
+                                            global,
                                             task.representatives.toConfigurationModel(),
                                             name)
                                 }

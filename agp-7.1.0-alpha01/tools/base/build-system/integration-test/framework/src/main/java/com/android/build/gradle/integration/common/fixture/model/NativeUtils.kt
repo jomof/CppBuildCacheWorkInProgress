@@ -21,6 +21,10 @@ import com.android.build.gradle.integration.common.fixture.ModelBuilderV2
 import com.android.build.gradle.integration.common.fixture.ModelBuilderV2.NativeModuleParams
 import com.android.build.gradle.integration.common.fixture.ModelContainerV2
 import com.android.build.gradle.internal.core.Abi
+import com.android.build.gradle.internal.cxx.caching.ObjectFileCacheEvent
+import com.android.build.gradle.internal.cxx.caching.ObjectFileCacheEvent.Outcome.LOADED
+import com.android.build.gradle.internal.cxx.caching.ObjectFileCacheEvent.Outcome.STORED
+import com.android.build.gradle.internal.cxx.caching.explainObjectFileCacheEventDifference
 import com.android.build.gradle.internal.cxx.logging.getCxxStructuredLogFolder
 import com.android.build.gradle.internal.cxx.logging.readStructuredLogs
 import com.android.build.gradle.internal.cxx.model.CxxAbiModel
@@ -35,6 +39,8 @@ import java.io.File
 import java.nio.charset.StandardCharsets
 import java.util.*
 import com.android.build.gradle.internal.cxx.string.StringDecoder
+import com.android.testutils.TestUtils
+import kotlin.math.max
 
 data class CompileCommandsJsonBinEntry(
         val sourceFile: String,
@@ -342,6 +348,65 @@ inline fun <reified Encoded, Decoded> GradleTestProject.readStructuredLogs(
     crossinline decode: (Encoded, StringDecoder) -> Decoded) : List<Decoded> {
     val logFolder = getCxxStructuredLogFolder(rootProject.projectDir)
     return readStructuredLogs(logFolder, decode)
+}
+/**
+ * Return true if this outcome is either a load event or an attempt
+ * to load.
+ */
+val ObjectFileCacheEvent.Outcome.isLoadOrAttempt : Boolean
+    // Intentionally not using an else so that the compiler errors out
+    // when a new value is added.
+    get() = when(this) {
+        LOADED,
+        ObjectFileCacheEvent.Outcome.NOT_LOADED_KEY_DIDNT_EXIST,
+        ObjectFileCacheEvent.Outcome.NOT_LOADED_SAME_OBJECT_FILE_LOCALLY,
+        ObjectFileCacheEvent.Outcome.NOT_LOADED_DEPENDENCIES_NOT_KNOWN -> true
+        STORED,
+        ObjectFileCacheEvent.Outcome.NOT_STORED_CACHE_ENTRY_ALREADY_EXISTED,
+        ObjectFileCacheEvent.Outcome.NOT_STORED_COMPILER_DIDNT_PRODUCE_OBJECT_FILE,
+        ObjectFileCacheEvent.Outcome.NOT_STORED_OBJECT_OLDER_THAN_DEPENDENCIES,
+        ObjectFileCacheEvent.Outcome.NOT_STORED_BUILD_FAILED,
+        ObjectFileCacheEvent.Outcome.NOT_STORED_DEPENDENCIES_NOT_KNOWN -> false
+        ObjectFileCacheEvent.Outcome.UNKNOWN -> error("unknown")
+        ObjectFileCacheEvent.Outcome.UNRECOGNIZED -> error("unknown")
+    }
+
+/**
+ * Return true if this outcome is either a store event or an attempt
+ * to store.
+ */
+val ObjectFileCacheEvent.Outcome.isStoreOrAttempt : Boolean
+    get() = !isLoadOrAttempt
+
+fun assertCacheHit(store : ObjectFileCacheEvent, retrieve : ObjectFileCacheEvent) {
+    if (store.outcome != STORED) {
+        error("expected store but was ${store.outcome}")
+    }
+    if (!retrieve.outcome.isLoadOrAttempt) {
+        error("expected load or attempt to load but was ${store.outcome}")
+    }
+    if (retrieve.outcome == LOADED) {
+        // It was a cache hit
+        return
+    }
+    val explanation = explainObjectFileCacheEventDifference(store, retrieve)
+    if (explanation != null) {
+        error(explanation)
+    }
+}
+
+/**
+ * Return a pair of Resource name to workspace path location of that same resource.
+ */
+inline fun <reified T> workspaceResourcePair(basename : String) : Pair<String, File> {
+    val packageSegment = T::class.java.canonicalName
+        .replace("com.android.build.gradle.integration.nativebuild", "nativebuild")
+        .replace(".", "/")
+
+    val workspaceResourceFolder = TestUtils.getWorkspaceRoot()
+        .resolve("tools/base/build-system/integration-test/native/src/test/resources")
+    val resourcePath = "$packageSegment/$basename"
+    return resourcePath to workspaceResourceFolder.resolve(resourcePath).toFile()
 }
 
 
