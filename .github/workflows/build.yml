@@ -40,4 +40,6 @@ jobs:
         cd HelloWorld
         ${{ matrix.call_gradle }} assemble 
       if: always()    
+      
+    - name: Done
     
