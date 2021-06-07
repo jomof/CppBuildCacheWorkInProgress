@@ -19,9 +19,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v2
-      
       - name: Partial Checkout
+        run: |
           REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
           git clone --filter=blob:none --no-checkout --depth 1  --sparse $REPO .
           git sparse-checkout init --cone
