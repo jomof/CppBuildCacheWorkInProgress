@@ -37,5 +37,5 @@ jobs:
 
     - name: Gradle Build
       run: |
-      cd HelloWorld
-      ${{ matrix.call_gradle }} assemble 
+        cd HelloWorld
+        ${{ matrix.call_gradle }} assemble 
