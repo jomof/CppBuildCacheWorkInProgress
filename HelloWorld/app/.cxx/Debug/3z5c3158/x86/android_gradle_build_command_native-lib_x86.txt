@@ -1,0 +1,7 @@
+Executable : /Users/jomof/Library/Android/sdk/cmake/3.18.1/bin/ninja
+arguments : 
+-C
+/Users/jomof/AndroidStudioProjects/CppBuildCacheWorkInProgress/HelloWorld/app/.cxx/Debug/3z5c3158/x86
+native-lib
+jvmArgs : 
+
