@@ -31,12 +31,12 @@ outside the normal build/ folder in a folder named .cxx/.
 Resources:
 - [ninja.org](https://ninja-build.org/)
 - Ninja build files for our HelloWorld project:
-  HelloWorld/app/.cxx/Debug/3z5c3158/x86/build.ninja
-  HelloWorld/app/.cxx/Debug/3z5c3158/x86/CMakeFiles/rules.ninja
-- The .o to .cpp and .h dependencies:
-  HelloWorld/app/.cxx/Debug/3z5c3158/x86/.ninja_deps
+  [HelloWorld/app/.cxx/Debug/3z5c3158/x86/build.ninja](https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld/app/.cxx/Debug/3z5c3158/x86/build.ninja)
+  [HelloWorld/app/.cxx/Debug/3z5c3158/x86/CMakeFiles/rules.ninja](https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld/app/.cxx/Debug/3z5c3158/x86/CMakeFiles/rules.ninja)
+- The (binary format) .o to .cpp and .h dependencies:
+  [HelloWorld/app/.cxx/Debug/3z5c3158/x86/.ninja_deps](https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld/app/.cxx/Debug/3z5c3158/x86/.ninja_deps/native-lib.cpp.o)
 - The location of the result:
-  HelloWorld/app/.cxx/Debug/3z5c3158/x86/CMakeFiles/native-lib.dir/native-lib.cpp.o
+  [HelloWorld/app/.cxx/Debug/3z5c3158/x86/CMakeFiles/native-lib.dir/native-lib.cpp.o](https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld/app/.cxx/Debug/3z5c3158/x86/CMakeFiles/native-lib.dir/native-lib.cpp.o)
 
 
 
