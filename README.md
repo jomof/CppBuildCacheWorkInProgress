@@ -54,12 +54,11 @@ Resources:
 CMake is a C/C++ meta build-system. The term meta is used because CMake generates a build
 system and doesn't directly compile .cpp to .o itself.
 CMake's responsibilities are:
-a) To have a maintainable, human-readable, representation of source files, flags, libraries 
-   and their relationships with each other. This information is usually in a file called
-   CMakeLists.txt.
-b) To provide reflection on those build relationships so that IDEs can present the structure
-   to users in a helpful way. This includes project structure tree features and language 
-   service features like autocompletion.
+
+a) To have a maintainable, human-readable, representation of source files, flags, libraries and their relationships with each other. This information is usually in a file called CMakeLists.txt.
+
+b) To provide reflection on those build relationships so that IDEs can present the structure to users in a helpful way. This includes project structure tree features and language service features like autocompletion.
+
 In our case, CMake generates a Ninja project.
 
 CMake's configuration phase is typically quite slow because it does things like test the
