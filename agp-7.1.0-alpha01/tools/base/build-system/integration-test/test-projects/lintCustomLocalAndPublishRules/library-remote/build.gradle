@@ -1,0 +1,40 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+
+android {
+    compileSdkVersion rootProject.latestCompileSdk
+    buildToolsVersion = rootProject.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 24
+
+    }
+
+    publishing {
+        singleVariant("release")
+    }
+}
+
+group = 'com.example.google'
+version = '1.0'
+
+afterEvaluate {
+    publishing {
+        repositories {
+            maven {
+                url = uri("${project.rootDir}/localRepo")
+            }
+        }
+        publications {
+            release(MavenPublication) {
+                from components.release
+            }
+        }
+    }
+}
+
+dependencies {
+    lintPublish project(':lintpublish-remote')
+}
+

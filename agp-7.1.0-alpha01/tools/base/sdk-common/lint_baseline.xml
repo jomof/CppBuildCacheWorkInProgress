@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="5" by="lint 7.0.0-dev">
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="src/main/java/com/android/ide/common/resources/configuration/CountryCodeQualifier.java"
+            line="68"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="src/main/java/com/android/ide/common/resources/configuration/CountryCodeQualifier.java"
+            line="147"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`.">
+        <location
+            file="src/main/java/com/android/ide/common/blame/MessageJsonSerializer.java"
+            line="170"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="src/main/java/com/android/ide/common/resources/configuration/NetworkCodeQualifier.java"
+            line="159"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="src/main/java/com/android/ide/common/resources/NodeUtils.java"
+            line="249"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toUpperCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`.">
+        <location
+            file="src/main/java/com/android/ide/common/util/PathString.kt"
+            line="716"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="src/main/java/com/android/ide/common/resources/configuration/ScreenDimensionQualifier.java"
+            line="54"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="src/main/java/com/android/ide/common/resources/configuration/ScreenHeightQualifier.java"
+            line="139"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="src/main/java/com/android/ide/common/resources/configuration/ScreenWidthQualifier.java"
+            line="141"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="src/main/java/com/android/ide/common/resources/configuration/SmallestScreenWidthQualifier.java"
+            line="141"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Aapt2ErrorNoPathParser.java"
+            line="29"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Aapt2ErrorNoPathParser.java"
+            line="52"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Aapt2ErrorParser.kt"
+            line="110"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/BadXmlBlockParser.java"
+            line="28"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error1Parser.java"
+            line="29"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error1Parser.java"
+            line="53"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error1Parser.java"
+            line="59"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error2Parser.java"
+            line="29"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error2Parser.java"
+            line="51"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error2Parser.java"
+            line="58"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error3Parser.java"
+            line="28"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error3Parser.java"
+            line="49"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error4Parser.java"
+            line="29"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error4Parser.java"
+            line="51"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error4Parser.java"
+            line="58"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error5Parser.java"
+            line="30"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error5Parser.java"
+            line="63"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error6Parser.java"
+            line="29"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error6Parser.java"
+            line="61"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error7Parser.java"
+            line="28"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error7Parser.java"
+            line="42"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error8Parser.java"
+            line="28"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Error8Parser.java"
+            line="52"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/SkippingHiddenFileParser.java"
+            line="28"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/SkippingWarning1Parser.java"
+            line="28"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/SkippingWarning1Parser.java"
+            line="53"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/SkippingWarning2Parser.java"
+            line="28"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/SkippingWarning2Parser.java"
+            line="49"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/resources/StringResourceUnescaperCharacterHandler.java"
+            line="52"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/resources/StringResourceUnescaperCharacterHandler.java"
+            line="80"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Warning1Parser.java"
+            line="28"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="src/main/java/com/android/ide/common/blame/parser/aapt/Warning1Parser.java"
+            line="47"/>
+    </issue>
+
+    <issue
+        id="FileComparisons"
+        message="Do not compare java.io.File with `equals` or `==`: will not work correctly on case insensitive file systems! See `go/files-howto`.">
+        <location
+            file="src/main/java/com/android/ide/common/resources/AssetItem.java"
+            line="58"/>
+    </issue>
+
+    <issue
+        id="FileComparisons"
+        message="Do not compare java.io.File with `equals` or `==`: will not work correctly on case insensitive file systems! See `go/files-howto`.">
+        <location
+            file="src/main/java/com/android/ide/common/resources/AssetSet.java"
+            line="75"/>
+    </issue>
+
+    <issue
+        id="FileComparisons"
+        message="Do not compare java.io.File with `equals` or `==`: will not work correctly on case insensitive file systems! See `go/files-howto`.">
+        <location
+            file="src/main/java/com/android/ide/common/resources/DataItem.java"
+            line="260"/>
+    </issue>
+
+    <issue
+        id="FileComparisons"
+        message="Do not compare java.io.File with `equals` or `==`: will not work correctly on case insensitive file systems! See `go/files-howto`.">
+        <location
+            file="src/main/java/com/android/ide/common/resources/DataSet.java"
+            line="190"/>
+    </issue>
+
+    <issue
+        id="FileComparisons"
+        message="Do not compare java.io.File with `equals` or `==`: will not work correctly on case insensitive file systems! See `go/files-howto`.">
+        <location
+            file="src/main/java/com/android/ide/common/fonts/FontLoader.kt"
+            line="118"/>
+    </issue>
+
+    <issue
+        id="FileComparisons"
+        message="Do not compare java.io.File with `equals` or `==`: will not work correctly on case insensitive file systems! See `go/files-howto`.">
+        <location
+            file="src/main/java/com/android/ide/common/resources/MergedResourceWriter.java"
+            line="438"/>
+    </issue>
+
+    <issue
+        id="FileComparisons"
+        message="Do not compare java.io.File with `equals` or `==`: will not work correctly on case insensitive file systems! See `go/files-howto`.">
+        <location
+            file="src/main/java/com/android/ide/common/resources/ResourceSet.java"
+            line="302"/>
+    </issue>
+
+    <issue
+        id="CommonForkJoinPool"
+        message="Avoid using common ForkJoinPool, directly or indirectly (for example via CompletableFuture). It has a limited set of threads on some machines which leads to hangs. See `go/do-not-freeze`.">
+        <location
+            file="src/main/java/com/android/ide/common/internal/WaitableExecutor.java"
+            line="74"/>
+    </issue>
+
+    <issue
+        id="NewForkJoinPool"
+        message="Avoid using new ForkJoinPool instances when possible. Prefer using the IntelliJ application pool via `com.intellij.openapi.application.Application#executeOnPooledThread`, or for the Android Gradle Plugin use `com.android.build.gradle.internal.tasks.Workers`. See `go/do-not-freeze`.">
+        <location
+            file="src/main/java/com/android/ide/common/internal/WaitableExecutor.java"
+            line="87"/>
+    </issue>
+
+    <issue
+        id="NewForkJoinPool"
+        message="Avoid using new ForkJoinPool instances when possible. Prefer using the IntelliJ application pool via `com.intellij.openapi.application.Application#executeOnPooledThread`, or for the Android Gradle Plugin use `com.android.build.gradle.internal.tasks.Workers`. See `go/do-not-freeze`.">
+        <location
+            file="src/main/java/com/android/ide/common/internal/WaitableExecutor.java"
+            line="100"/>
+    </issue>
+
+</issues>

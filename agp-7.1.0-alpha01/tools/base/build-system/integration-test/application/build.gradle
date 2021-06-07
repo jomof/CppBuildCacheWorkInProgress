@@ -1,0 +1,223 @@
+import com.android.tools.internal.testing.DevicePool;
+
+apply plugin: 'com.android.tools.java'
+apply plugin: 'com.android.tools.kotlin'
+
+repositories {
+    maven { url = uri(rootProject.cloneArtifacts.repository) }
+}
+
+dependencies {
+    testImplementation project(':base:build-system:integration-test:framework')
+    testImplementation project(':analytics-library:protos')
+    testImplementation project(':apksig')
+    testImplementation project(':base:bazel:repolinker')
+    testImplementation project(':base:builder')
+    testImplementation project(':base:builder-model')
+    testImplementation project(':base:build-system:gradle-core')
+    testImplementation project(':base:sdk-common')
+    testImplementation project(':base:sdklib')
+    testImplementation testFixtures(project(':base:repository'))
+    testImplementation project(':base:testing-infrastructure:device-pool:device-provider')
+    testImplementation project(':base:testutils')
+    testImplementation project(':base:zipflinger')
+    testCompileOnly(project(':base:profile'))
+    testImplementation project(':base:layoutlib-api')
+    testImplementation project(':base:profgen')
+
+    testImplementation libs.kotlin_stdlib
+    testImplementation libs.kotlin_test
+
+    testImplementation gradleApi()
+    testImplementation libs.asm_tree
+    testImplementation libs.smali_dexlib
+    testImplementation libs.apache_commons_io
+    testImplementation libs.apache_commons_lang
+    testImplementation libs.apache_compress
+    testImplementation libs.bundle_tool
+    testImplementation libs.google_api_client
+    testImplementation libs.google_storage_client
+    testImplementation libs.junit
+    testImplementation libs.protobuf
+    testImplementation libs.protobuf_util
+    testImplementation libs.truth
+
+    testImplementation libs.mockito_core
+
+    // Add dependency on plugin code.  Exclude transitive dependencies to avoid conflict due to
+    // Groovy versions.
+    testImplementation(project(':base:build-system:gradle-core')) {
+        transitive = false
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+configurations {
+    // google-api-client depends on guava-jdk5.
+    testImplementation.exclude group: 'com.google.guava', module: 'guava-jdk5'
+}
+
+apply from: '../integration-tests.gradle'
+
+// These tasks will not depend on publishLocal, so they will run integration
+// tests against whatever version of the plugin is in ../../../out/repo. This
+// allows us to run integration tests with different versions of Java, without
+// rebuilding the plugin.
+task testPrebuilts(type: Test)
+task connectedIntegrationTestPrebuilts(type: Test)
+task connectedIntegrationTestPrebuiltsQuarantine(type: Test)
+
+File tempFile = new File(project.buildDir, 'tmp')
+tempFile.mkdirs()
+
+configure([test, testPrebuilts]) {
+    description =
+            "Runs the project integration tests. This requires an SDK either from the Android " +
+                    "source tree, under out/..., or an env var ANDROID_SDK_ROOT."
+    systemProperties['jar.path'] = jar.archivePath
+    systemProperties['java.io.tmpdir'] = tempFile.absolutePath
+    environment = testEnvironment
+
+    outputs.upToDateWhen { false }
+
+    maxParallelForks = Runtime.runtime.availableProcessors() / 3
+
+    useJUnit {
+        String includedCategories = project.providers.systemProperty('test.includeCategories').forUseAtConfigurationTime().orNull
+        if (includedCategories != null) {
+            def categories = includedCategories.split(',')
+            String defaultPackage = "com.android.build.gradle.integration.common.category."
+            categories = categories.collect { it.charAt(0).isUpperCase() ? defaultPackage + it : it }
+            includeCategories categories as String[]
+        }
+        excludeCategories "com.android.build.gradle.integration.common.category.OnlineTests"
+    }
+
+    exclude "com/android/build/gradle/integration/automatic/**"
+    exclude "com/android/build/gradle/integration/sanity/**"
+    exclude "**/BazelIntegrationTestsSuite*"
+}
+
+configure(test) {
+	environment["PROJECT_ROOT"] = project.projectDir
+}
+
+task automaticTest(type: Test) {
+    include "com/android/build/gradle/integration/automatic/**"
+
+    // Always run the task, when requested.
+    outputs.upToDateWhen { false }
+    environment = testEnvironment
+}
+
+task sanityTest(type: Test) {
+    include "com/android/build/gradle/integration/sanity/**"
+    environment = testEnvironment
+    dependsOn ':publishLocal'
+}
+
+task onlineTest(type: Test) {
+    // Always run the task, when requested.
+    outputs.upToDateWhen { false }
+    environment = testEnvironment
+
+    useJUnit {
+        includeCategories "com.android.build.gradle.integration.common.category.OnlineTests"
+    }
+}
+
+check.dependsOn automaticTest
+check.dependsOn sanityTest
+
+task connectedIntegrationTest(type: Test) {
+    dependsOn ':base:build-system:integration-test:native:publishLocal'
+}
+task connectedIntegrationTestQuarantine(type: Test)
+
+def allConnectedTestTasks = [
+        connectedIntegrationTest,
+        connectedIntegrationTestPrebuilts,
+        connectedIntegrationTestQuarantine,
+        connectedIntegrationTestPrebuiltsQuarantine
+]
+
+
+configure(allConnectedTestTasks) {
+    def nativeTestTask = tasks.findByPath(':base:build-system:integration-test:native:test')
+    testClassesDirs = sourceSets.test.output.classesDirs.plus(nativeTestTask.testClassesDirs)
+    classpath = sourceSets.test.runtimeClasspath.plus(nativeTestTask.classpath)
+
+    description =
+            "Runs the project integration tests with device tests. This requires an SDK either " +
+                    "from the Android source tree, under out/..., or an env var ANDROID_SDK_ROOT " +
+                    "and a device."
+    group = "verification"
+    systemProperties['jar.path'] = jar.archivePath
+    systemProperties['java.io.tmpdir'] = tempFile.absolutePath
+
+    environment testEnvironment + ["APPLY_DEVICEPOOL_PLUGIN": true]
+
+    // Always run the task, when requested.
+    outputs.upToDateWhen { false }
+
+    def count = Math.ceil(Runtime.runtime.availableProcessors() / 4)
+    if (count > 8) {
+        count = 8
+    }
+    maxParallelForks = count
+
+    exclude "com/android/build/gradle/integration/automatic/**"
+}
+
+configure([test, testPrebuilts, onlineTest, connectedIntegrationTest,
+           connectedIntegrationTestPrebuilts]) {
+    testLogging {
+        events = ['FAILED', 'SKIPPED', 'STANDARD_ERROR']
+        displayGranularity = 2 // Show test class and method.
+        exceptionFormat = 'full'
+        showCauses = true
+    }
+}
+
+DevicePool devicePool = new DevicePool();
+
+task('startDevicePool').doLast {
+    // This port number needs to be kept in sync with DevicePoolClient.
+    devicePool.start(5554)
+}
+
+task('stopDevicePool').doLast {
+    devicePool.stop()
+}
+
+startDevicePool.finalizedBy stopDevicePool
+allConnectedTestTasks.forEach({task -> stopDevicePool.mustRunAfter(task)})
+
+automaticTest.dependsOn ':publishLocal'
+onlineTest.dependsOn ':publishLocal'
+test.dependsOn ':publishAndroidGradleLocal'
+allConnectedTestTasks.forEach({task -> task.dependsOn startDevicePool, ':base:testing-infrastructure:device-pool:device-provider:publishLocal'})
+connectedIntegrationTest.dependsOn ':publishLocal'
+connectedIntegrationTestQuarantine.dependsOn ':publishLocal'
+
+if (tasks.findByName("jacocoTestReport") != null) {
+    jacocoTestReport {
+        sourceSets project(':base:build-system:gradle-core').sourceSets.main
+        sourceSets project(':base:builder').sourceSets.main
+        sourceSets project(':base:builder-model').sourceSets.main
+        sourceSets project(':base:builder-test-api').sourceSets.main
+    }
+
+    // Due to memory constraints, apply jacoco only when jacocoTestReport is invoked.  Make sure to
+    // rerun tests when generating report jacoco.
+    gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
+        if (taskGraph.hasTask(jacocoTestReport)) {
+            test.environment("ATTACH_JACOCO_AGENT", "yes")
+        }
+    }
+}

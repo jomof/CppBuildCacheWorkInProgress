@@ -1,0 +1,633 @@
+syntax = "proto3";
+package proto;
+
+option java_package = "com.android.tools.deploy.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// A request to hot-swap a particular application package.
+message SwapRequest {
+  // The application package.
+  string package_name = 1;
+
+  // If true, restarts the current activity after a successful hot-swap.
+  bool restart_activity = 2;
+
+  // The classes to be hot-swapped.
+  repeated ClassDef new_classes = 3;
+  repeated ClassDef modified_classes = 4;
+
+  // The session id where the new apk have been staged.
+  string session_id = 5;
+
+  // The processes to code swap.
+  repeated int32 process_ids = 6;
+
+  // The number of extra agents that the server should wait for.
+  // Those are agents that the server is not responsible to start.
+  int32 extra_agents = 7;
+
+  Arch arch = 8;
+
+  bool structural_redefinition = 9;
+
+  // Lets the agent know what instrumentation to apply.
+  bool overlay_swap = 10;
+
+  bool variable_reinitialization = 11;
+}
+
+message OverlaySwapRequest {
+  // The application package.
+  string package_name = 1;
+
+  // If true, restarts the current activity after a successful hot-swap.
+  bool restart_activity = 2;
+
+  // The classes to be hot-swapped.
+  repeated ClassDef new_classes = 3;
+  repeated ClassDef modified_classes = 4;
+
+  // The resources to be overlaid.
+  repeated OverlayFile resource_overlays = 5;
+
+  // The id that should be used for the persistent overlay.
+  string overlay_id = 6;
+
+  // The id that is expected for the existing overlay.
+  string expected_overlay_id = 7;
+
+  // The processes to code swap.
+  repeated int32 process_ids = 8;
+
+  // The number of extra agents that the server should wait for.
+  // Those are agents that the server is not responsible to start.
+  int32 extra_agents = 9;
+
+  Arch arch = 10;
+
+  bool structural_redefinition = 11;
+  bool variable_reinitialization = 12;
+
+  // Always update the overlay, even when swap fails.
+  bool always_update_overlay = 13;
+}
+
+message OverlayInstallRequest {
+  string package_name = 1;
+  Arch arch = 2;
+
+  string overlay_id = 3;
+  string expected_overlay_id = 4;
+
+  repeated OverlayFile overlay_files = 5;
+  repeated string deleted_files = 6;
+}
+
+message OverlayInstallResponse {
+  enum Status {
+    UNKNOWN = 0;
+    OK = 1;
+    SETUP_FAILED = 2;
+    START_SERVER_FAILED = 3;
+    OVERLAY_ID_MISMATCH = 4;
+    OVERLAY_UPDATE_FAILED = 5;
+    START_SERVER_FAILED_USERDEBUG = 6;
+    INSTALL_SERVER_COM_ERR = 7;
+  }
+
+  Status status = 1;
+
+  // Additional data to help display a better error message in studio
+  string extra = 2;
+
+  // Error logs retrieved from the device.
+  repeated AgentExceptionLog agent_logs = 3;
+}
+
+message OverlayIdPush {
+  string package_name = 1;
+  string prev_oid = 2;
+  string next_oid = 3;
+  bool wipe_overlays = 4;
+}
+
+message ClassDef {
+  message FieldReInitState {
+    enum VariableState {
+      UNKNOWN = 0;
+      CONSTANT = 1;
+    }
+    string name = 1;
+    string type = 2;
+    bool staticVar = 3;
+    VariableState state = 4;
+    string value = 5;
+  }
+
+  // JVM class name for the class that is to be swapped.
+  string name = 1;
+
+  // Dex code of the class to be swapped.
+  bytes dex = 2;
+
+  repeated FieldReInitState fields = 3;
+}
+
+message LiveLiteralUpdateRequest {
+  string package_name = 1;
+
+  // The processes to code swap.
+  repeated int32 process_ids = 2;
+
+  int32 extra_agents = 3;
+
+  Arch arch = 4;
+
+  repeated LiveLiteral updates = 5;
+
+  string overlay_id = 6;
+
+  string expected_overlay_id = 7;
+}
+
+message InstallCoroutineAgentRequest {
+  string package_name = 1;
+  Arch arch = 2;
+}
+
+message LiveLiteral {
+ // The "Durable Key" that is used to refer to the variable.
+ string key = 1;
+
+ // The helper class where the value of the live literal resides in.
+ string helper_class = 2;
+
+ // JVM style primitive type name or Ljava/lang/String;
+ string type = 3;
+
+ // Value of the literal in a string format that is can be parsed using
+ // the respective "fromString" method.
+ string value = 4;
+
+ // The PSI offset of the literal. This is used to look up the "Durable Key"
+ // when it is not given.
+ int32 offset = 5;
+}
+
+message LiveLiteralUpdateResponse {
+  enum Status {
+    UNKNOWN = 0;
+    OK = 1;
+    SETUP_FAILED = 2;
+    START_SERVER_FAILED = 3;
+    START_SERVER_FAILED_USERDEBUG = 4;
+    READY_FOR_AGENTS_NOT_RECEIVED = 5;
+    AGENT_ATTACH_FAILED = 6;
+    AGENT_ERROR = 7;                      // One or more of the agents reported failure
+    PROCESS_CRASHING = 8;                // One of the processes is crashing
+    PROCESS_NOT_RESPONDING = 9;          // One of the processes is not responding
+    PROCESS_TERMINATED = 10;              // One of the processes terminated during swap
+    MISSING_AGENT_RESPONSES = 11;         // Not all agents responded
+    INSTALL_SERVER_COM_ERR = 12;           // InstallServer internal or pipe rw error
+  }
+  Status status = 1;
+
+  // Additional data to help display a better error message in studio
+  string extra = 2;
+
+  repeated AgentResponse failed_agents = 3;
+
+  repeated AgentExceptionLog agent_logs = 4;
+}
+
+message JvmtiError {
+  message Details {
+    enum Type {
+      UNKNOWN = 0;
+      FIELD_ADDED = 1;
+      FIELD_REMOVED = 2;
+    }
+
+    // The type of error.
+    Type type = 1;
+
+    // The name of the field, method, or class that caused the error.
+    string name = 2;
+
+    // The parent class, if any, of the field, method, or class.
+    string class_name = 3;
+  }
+
+  string error_code = 1;
+  repeated Details details = 2;
+}
+
+message AgentResponse {
+  enum Status {
+    UNKNOWN = 0;
+    OK = 1;
+    SOCKET_READ_FAILED = 2;       // The request could not be read from the socket
+    REQUEST_PARSE_FAILED = 3;     // The request could not be parsed into a proto
+    JNI_SETUP_FAILED = 4;         // The JNI environment could not be set up.
+    JVMTI_SETUP_FAILED = 5;       // The JVMTI environment could not be set up.
+    SET_CAPABILITIES_FAILED = 6;  // JVMTI capabilities could not be set.
+
+    SWAP_FAILURE = 7;             // Has a corresponding AgentSwapResponse with error.
+    LITERAL_FAILURE = 8;          // Has a corresponding AgentLiveLiteralUpdateResponse with error.
+  }
+  Status status = 1;
+
+  // The pid of the process this agent was attached to.
+  int32 pid = 2;
+
+  repeated Event events = 3;
+
+  oneof response {
+    AgentSwapResponse swap_response = 4;
+    AgentLiveLiteralUpdateResponse live_literal_response = 5;
+  }
+}
+
+// A response detailing the results of a AgentRequest.
+message AgentSwapResponse {
+  enum Status {
+    UNKNOWN = 0;
+    OK = 1;                    // The swap completed successfully
+    INSTRUMENTATION_FAILED = 2;  // The application could not be instrumented
+    CLASS_NOT_FOUND = 3;     // The class requested for swap could not be found
+    JVMTI_ERROR = 4;         // A JVMTI error occurred during swap
+
+    // JVMTI supports the swap but some variables cannot be reinit.
+    UNSUPPORTED_REINIT = 5;
+    UNSUPPORTED_REINIT_STATIC_PRIMITIVE = 6;
+    UNSUPPORTED_REINIT_STATIC_OBJECT = 7;
+    UNSUPPORTED_REINIT_STATIC_ARRAY = 8;
+    UNSUPPORTED_REINIT_NON_STATIC_PRIMITIVE = 9;
+    UNSUPPORTED_REINIT_NON_STATIC_OBJECT = 10;
+    UNSUPPORTED_REINIT_NON_STATIC_ARRAY = 11;
+    UNSUPPORTED_REINIT_STATIC_PRIMITIVE_NOT_CONSTANT = 12;
+
+    UNSUPPORTED_REINIT_R_CLASS_VALUE_MODIFIED = 13;
+  }
+
+  // The state of the swap that was requested.
+  Status status = 1;
+
+  // Detailed information on the errors that occurred.
+  oneof error_details {
+    string class_name = 4;
+    JvmtiError jvmti_error = 5;
+    string error_msg = 6;
+  }
+}
+
+message AgentLiveLiteralUpdateResponse {
+  enum Status {
+    UNKNOWN = 0;
+    OK = 1;
+    INSTRUMENTATION_FAILED = 2;
+    ERROR = 3;
+  }
+  Status status = 1;
+  string extra = 2;
+}
+
+message InstallCoroutineAgentResponse {
+  enum Status {
+      UNKNOWN = 0;
+      OK = 1;
+      ERROR = 3;
+    }
+    Status status = 1;
+    string error_msg = 2;
+}
+
+message AgentExceptionLog {
+  enum AgentPurpose {
+    UNKNOWN = 0;
+    STARTUP_AGENT = 1;
+    APPLY_CHANGES = 2;
+    APPLY_CODE_CHANGES = 3;
+  }
+
+  // All timestamps use the device's monotonic clock.
+  int64 agent_attach_time_ns = 1;
+  int32 agent_attach_count = 2;
+  int64 event_time_ns = 3;
+  AgentPurpose agent_purpose = 4;
+
+  // If the failure was related to an instrumentation failure, this field
+  // holds the names of classes that caused the failure. Otherwise, it is empty.
+  repeated string failed_classes = 5;
+}
+
+// Message returned when installer receives a SwapRequest.
+message SwapResponse {
+  enum Status {
+    UNKNOWN = 0;
+    OK = 1;                               // The swap completed successfully.
+    AGENT_ERROR = 2;                      // One or more of the agents reported failure
+    INSTALLATION_FAILED = 3;              // Calling install-commit failed
+    ACTIVITY_RESTART_FAILED = 4;          // Calling update-appinfo failed
+    SETUP_FAILED = 5;                     // Could not copy files
+    START_SERVER_FAILED = 6;              // Could not start the server
+    AGENT_ATTACH_FAILED = 7;              // Could not attach agents
+    MISSING_AGENT_RESPONSES = 8;          // Not all agents responded
+    UNPARSEABLE_AGENT_RESPONSE = 9;      // An agent responded in an unexpected way
+    NO_DEBUGGER_SESSIONS = 10;            // Could not swap with debugger
+    PROCESS_CRASHING = 11;                // One of the processes is crashing
+    PROCESS_NOT_RESPONDING = 12;          // One of the processes is not responding
+    PROCESS_TERMINATED = 13;              // One of the processes terminated during swap
+    OVERLAY_ID_MISMATCH = 14;             // The expected overlay was not present
+    OVERLAY_UPDATE_FAILED = 15;           // The overlay update failed to complete
+    SWAP_FAILED_BUT_OVERLAY_UPDATED = 16; // Swap failed, but overlay was updated
+    START_SERVER_FAILED_USERDEBUG = 17;   // Could not start the server
+    READY_FOR_AGENTS_NOT_RECEIVED = 18;   // Did not receive the OK to attach agents
+    INSTALL_SERVER_COM_ERR = 19;          // InstallServer internal or pipe rw error
+  }
+
+  Status status = 1;
+
+  repeated AgentResponse failed_agents = 2;
+
+  // Additional data to help display a better error message in studio
+  string extra = 3;
+
+  // Error logs retrieved from the device during swap.
+  repeated AgentExceptionLog agent_logs = 4;
+}
+
+message DumpRequest {
+  repeated string package_names = 1;
+}
+
+message InstallerRequest {
+  string version = 1;
+  string command_name = 2;
+  oneof request {
+    DumpRequest dump_request = 3;
+    SwapRequest swap_request = 4;
+    InstallInfo install_info_request = 5;
+    OverlaySwapRequest overlay_swap_request = 6;
+    OverlayIdPush overlay_id_push = 7;
+    OverlayInstallRequest overlay_install = 8;
+    LiveLiteralUpdateRequest live_literal_request = 9;
+    InstallCoroutineAgentRequest install_coroutine_agent_request = 10;
+  }
+}
+
+// Message returned by the Android native IRR installer. There are two layers :
+// - Installer layer which is unaware of commands specifics.
+// - Command layer whici is unaware of installe specifics.
+// This layering is visible with the events messages which can be in both
+// 'events' fields but also 'extra' field.
+message InstallerResponse {
+  enum Status {
+    UNINITIALIZED = 0;
+    OK = 1;
+    ERROR_WRONG_VERSION = 2;
+    ERROR_PARAMETER = 3;
+    ERROR_CMD = 4;
+  }
+  Status status = 1;
+  repeated Event events = 2;
+  oneof extra {
+    SwapResponse swap_response = 3;
+    DumpResponse dump_response = 4;
+    DeltaPreinstallResponse deltapreinstall_response = 5;
+    DeltaInstallResponse deltainstall_response = 6;
+    OverlayIdPushResponse overlayidpush_response = 7;
+    OverlayInstallResponse overlay_install_response = 8;
+    LiveLiteralUpdateResponse live_literal_response = 9;
+    InstallCoroutineAgentResponse install_coroutine_agent_response = 10;
+  }
+}
+
+message Event {
+  enum Type {
+    UNINITIALIZED = 0;
+    TRC_BEG = 1;  // Used for tracing. Mark beginning of a section.
+    TRC_END = 2;  // Used for tracing. Mark end of a section.
+    LOG_OUT = 3;
+    LOG_ERR = 4;
+
+    // Used for tracing. Marks the beginning of a section that should
+    // be reported as a DeployMetric in studio.
+    TRC_METRIC = 5;
+  }
+  Type type = 1;
+  int64 pid = 2;
+  int64 tid = 3;
+  string text = 4;
+  int64 timestamp_ns = 5;
+}
+
+message ApkDump {
+  string name = 1;
+  bytes cd = 2;
+  bytes signature = 3;
+  string absolute_path = 4;
+}
+
+enum Arch {
+  ARCH_UNKNOWN = 0;
+  ARCH_32_BIT = 1;
+  ARCH_64_BIT = 2;
+}
+
+message PackageDump {
+  // The name of the package.
+  string name = 1;
+
+  // The apk files installed in the package.
+  repeated ApkDump apks = 2;
+
+  // The package processes currently executing.
+  repeated int32 processes = 3;
+
+  // Whether the package is running as 32-bit or 64-bit.
+  Arch arch = 4;
+}
+
+message DumpResponse {
+  enum Status {
+    UNKNOWN = 0;
+    OK = 1;  // The dump completed successfully.
+    ERROR_PACKAGE_NOT_FOUND = 2;
+  }
+
+  Status status = 1;
+  repeated PackageDump packages = 2;
+  string failed_package = 3;
+}
+
+message PatchInstruction {
+  string src_absolute_path = 1;
+  // A stream of:
+  // (int32 offset, int32 length) referring to the offset to patch in the
+  // destination file and the length of data to consume from the patches
+  // stream in this proto object.
+  bytes instructions = 2;
+  bytes patches = 3;
+  int64 dst_filesize = 4;
+}
+
+message InstallInfo {
+  repeated string options = 1;
+  repeated PatchInstruction patchInstructions = 2;
+  bool inherit = 3;
+  string package_name = 4;
+}
+
+enum DeltaStatus {
+  UNKNOWN = 0;
+  OK = 1;
+  ERROR = 2;
+  STREAM_APK_FAILED = 3;
+  STREAM_APK_NOT_SUPPORTED = 4;
+}
+
+message DeltaPreinstallResponse {
+  DeltaStatus status = 1;
+  string session_id = 2;
+}
+
+message DeltaInstallResponse {
+  DeltaStatus status = 1;
+  // The output returned by the package manager when calling
+  // either "pm install" or "pm commit". Parsed to determine
+  // reason upon failure.
+  string install_output = 2;
+}
+
+message CheckSetupRequest {
+  repeated string files = 1;
+}
+
+message CheckSetupResponse {
+  repeated string missing_files = 1;
+}
+
+message GetAgentExceptionLogRequest {
+  string package_name = 1;
+}
+
+message GetAgentExceptionLogResponse {
+  enum Status {
+    UNKNOWN = 0;
+    OK = 1;
+    ERROR = 2;
+  }
+  Status status = 1;
+  repeated AgentExceptionLog logs = 2;
+}
+
+message OverlayUpdateRequest {
+  string overlay_path = 1;
+  string overlay_id = 2;
+  string expected_overlay_id = 3;
+  repeated OverlayFile files_to_write = 4;
+  repeated string files_to_delete = 5;
+  bool wipe_all_files = 6;
+  string package_name = 7;
+}
+
+message OverlayFile {
+  string path = 1;
+  bytes content = 2;
+}
+
+message OverlayUpdateResponse {
+  enum Status {
+    UNKNOWN = 0;
+    OK = 1;
+    ID_MISMATCH = 2;
+    UPDATE_FAILED = 3;
+  }
+
+  Status status = 1;
+  string error_message = 2;
+}
+
+message OpenAgentSocketRequest {
+  string socket_name = 1;
+}
+
+message OpenAgentSocketResponse {
+  enum Status {
+    UNKNOWN = 0;
+    OK = 1;
+    BIND_SOCKET_FAILED = 2;
+  }
+
+  Status status = 1;
+}
+
+message SendAgentMessageRequest {
+  int32 agent_count = 1;
+  AgentRequest agent_request = 2;
+}
+
+message AgentRequest {
+  oneof request {
+    SwapRequest swap_request = 1;
+    LiveLiteralUpdateRequest live_literal_request = 2;
+  }
+}
+
+message SendAgentMessageResponse {
+  enum Status {
+    UNKNOWN = 0;
+    OK = 1;
+    AGENT_ACCEPT_FAILED = 2;
+    WRITE_TO_AGENT_FAILED = 3;
+    READ_FROM_AGENT_FAILED = 4;
+    UNPARSEABLE_AGENT_RESPONSE = 5;
+  }
+
+  Status status = 1;
+  repeated AgentResponse agent_responses = 2;
+}
+
+message OverlayIdPushResponse {
+  enum Status {
+    UNKNOWN = 0;
+    OK = 1;
+    ID_MISMATCH = 2;
+  }
+
+  Status status = 1;
+}
+
+message InstallServerRequest {
+  oneof message {
+    CheckSetupRequest check_request = 1;
+    OverlayUpdateRequest overlay_request = 2;
+    GetAgentExceptionLogRequest log_request = 3;
+    OpenAgentSocketRequest socket_request = 4;
+    SendAgentMessageRequest send_request = 5;
+  }
+}
+
+message InstallServerResponse {
+  enum Status {
+    UNKNOWN = 0;
+    REQUEST_COMPLETED = 1;
+    ERROR = 2;
+  }
+
+  Status status = 1;
+
+  // Contains the events that occurred during the lifetime
+  // of the server. Only set when status is SERVER_EXITED.
+  repeated Event events = 2;
+
+  oneof message {
+    CheckSetupResponse check_response = 3;
+    OverlayUpdateResponse overlay_response = 4;
+    GetAgentExceptionLogResponse log_response = 5;
+    OpenAgentSocketResponse socket_response = 6;
+    SendAgentMessageResponse send_response = 7;
+  }
+}

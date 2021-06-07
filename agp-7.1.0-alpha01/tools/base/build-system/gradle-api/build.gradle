@@ -1,0 +1,154 @@
+apply plugin: 'com.android.tools.java-library'
+apply plugin: 'com.android.tools.kotlin'
+apply plugin: 'com.android.tools.publish'
+apply plugin: 'org.jetbrains.dokka'
+
+configurations {
+    provided
+    additionalDokkaClasspath
+}
+
+// Add buildscript repositories directly to this project as Dokka tries to resolve dependencies
+// using these repositories. If it fails, it tries to do so using the parent project which is
+// deprecated in Gradle 6.0 and will be removed in 7.0.
+buildscript {
+    repositories {
+        maven { url "$rootDir/../prebuilts/tools/common/m2/repository" }
+    }
+}
+
+dependencies {
+    implementation project(':base:builder-test-api')
+    implementation libs.guava
+    implementation libs.kotlin_stdlib
+    api libs.asm
+
+    provided gradleApi()
+    provided project(':base:builder-model') // Only present for legacy reasons.
+
+    testImplementation libs.junit
+    testImplementation libs.kotlin_test
+    testImplementation project(':base:testutils')
+    testImplementation gradleApi()
+    testImplementation project(':base:builder-model')
+    testImplementation project(':base:annotations')
+    testImplementation libs.mockito_core
+    testImplementation libs.equalsverifier
+
+    additionalDokkaClasspath gradleApi()
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.provided
+    }
+}
+
+javadoc {
+  classpath += configurations.provided
+  options.links("http://docs.oracle.com/javase/8/docs/api/", "https://docs.gradle.org/current/javadoc/")
+}
+
+task javadocZip(type: Zip) {
+  dependsOn javadoc
+  from javadoc.destinationDir
+  archiveBaseName.set('javadoc')
+}
+
+group = 'com.android.tools.build'
+archivesBaseName = 'gradle-api'
+version = rootProject.ext.buildVersion
+
+project.ext.pomName = 'Android Gradle API'
+project.ext.pomDesc = 'APIs to customize Android Gradle Builds'
+
+/** Dokka task with fixed input annotations. */
+abstract class FixedDokka extends org.jetbrains.dokka.gradle.DokkaTask {
+    @Classpath
+    abstract ConfigurableFileCollection getAdditionalDokkaClasspath()
+
+    @Internal
+    String outputDirectory
+
+    @Internal
+    boolean reportNotDocumented = false
+}
+
+def fixedDokkaProvider = tasks.register("fixedDokka", FixedDokka) {
+    outputDirectory = new File(project.buildDir, "dokka").absolutePath
+    outputFormat = 'dac'
+    jdkVersion = 8
+
+    includeNonPublic = false
+    skipDeprecated = false
+    skipEmptyPackages = false
+    noJdkLink = true
+
+    dacRoot = "/reference/tools/gradle-api/" + version.substring(0, version.lastIndexOf("."))
+    additionalDokkaClasspath.from(configurations.additionalDokkaClasspath)
+    doFirst {
+        new File(outputDirectory).deleteDir()
+        classpath = additionalDokkaClasspath.files
+    }
+
+    // Root URL of the generated documentation to link with. The trailing slash is required!
+    externalDocumentationLink {
+        url = new URL("https://docs.gradle.org/current/javadoc/")
+    }
+    externalDocumentationLink {
+        url = new URL("http://docs.oracle.com/javase/8/docs/api/")
+    }
+
+    doLast {
+        // Remove Package Index and packages and package-summary.html
+        def toc = new File(outputDirectory, '_toc.yaml')
+        def text = toc.readLines()
+        text.removeIf {
+             it == '- title: Package Index' ||
+             it == '  path: ' + dacRoot + '/packages.html' ||
+             it.endsWith('/package-summary.html')
+        }
+        toc.text = text.join('\n') + '\n'
+    }
+}
+
+abstract class WriteVersionFile extends DefaultTask {
+    @Input
+    abstract Property<String> getBuildVersion()
+
+    @OutputDirectory
+    abstract DirectoryProperty getOutputDirectory()
+
+    @TaskAction
+    def writeFile() {
+        def outputDir = outputDirectory.get().asFile
+        outputDir.deleteDir()
+        outputDir.mkdir()
+        def versionFile = new File(outputDir, "version.properties")
+
+        def docsVersion = buildVersion.get().substring(0, buildVersion.get().lastIndexOf("."))
+        def properties = new Properties()
+        properties.put("androidGradlePluginVersion", buildVersion.get())
+        properties.put("docsVersion", docsVersion)
+        versionFile.withWriter {properties.store(it, null) }
+    }
+}
+
+def writeVersionFileProvider = tasks.register("writeDocsVersionFile", WriteVersionFile) {
+    it.getBuildVersion().set(provider { rootProject.ext.buildVersion })
+    it.getOutputDirectory().set(project.layout.buildDirectory.dir("dokkaVersion"))
+}
+
+task dokkaZip(type: Zip) {
+    dependsOn(fixedDokkaProvider)
+    from fixedDokkaProvider.map { it.outputDirectory }
+    from writeVersionFileProvider.map { it.outputDirectory }
+    destinationDirectory = layout.projectDirectory.dir("$rootDir/../out/dist")
+    archiveFileName = "documentation.zip"
+}

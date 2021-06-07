@@ -1,0 +1,166 @@
+/*
+ * Copyright 2020 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+syntax = "proto3";
+package backgroundtask.inspection;
+option java_package = "backgroundtask.inspection";
+option java_outer_classname = "BackgroundTaskInspectorProtocol";
+option optimize_for = LITE_RUNTIME;
+
+// ======= MESSAGES =======
+
+message Command {
+    oneof specialized {
+        TrackBackgroundTaskCommand track_background_task = 1;
+    }
+}
+
+message TrackBackgroundTaskCommand {}
+
+message Response {
+    oneof specialized {
+        TrackBackgroundTaskResponse track_background_task = 1;
+    }
+}
+
+message TrackBackgroundTaskResponse {}
+
+message Event {
+    int64 timestamp = 1;
+    oneof specialized {
+        BackgroundTaskEvent background_task_event = 2;
+        DebugEvent debug = 3;
+    }
+}
+
+message BackgroundTaskEvent {
+    int64 task_id = 1;
+    oneof specialized {
+        // A wake lock was acquired, forcing the device to stay awake.
+        WakeLockAcquired wake_lock_acquired = 101;
+        // A wake lock was released, indicating it's not needed anymore.
+        WakeLockReleased wake_lock_released = 102;
+        // An alarm was set.
+        AlarmSet alarm_set = 103;
+        // An alarm was cancelled.
+        AlarmCancelled alarm_cancelled = 104;
+        // An alarm goes off.
+        AlarmFired alarm_fired = 105;
+    }
+}
+
+// ======= ALARM EVENT =======
+
+message AlarmSet {
+  enum Type {
+    UNDEFINED_ALARM_TYPE = 0;
+    RTC = 1;
+    RTC_WAKEUP = 2;
+    ELAPSED_REALTIME = 3;
+    ELAPSED_REALTIME_WAKEUP = 4;
+  }
+
+  // Type of alarm.
+  Type type = 1;
+  // Time in milliseconds that the alarm should go off, using the appropriate
+  // clock (depending on the alarm type). Used by all AlarmManager.set*()
+  // methods.
+  int64 trigger_ms = 2;
+  // The length of the requested delivery window, in milliseconds. The alarm
+  // will be delivered no later than this many milliseconds after trigger_ms.
+  // Used by AlarmManager.setWindow().
+  int64 window_ms = 3;
+  // Interval in milliseconds between subsequent repeats of the alarm. Used by
+  // AlarmManager.setRepeating() and AlarmManager.setInexactRepeating().
+  int64 interval_ms = 4;
+  // The alarm action can either be a PendingIntent or an AlarmListener.
+  oneof set_action {
+    // Metadata of the action to perform when the alarm goes off.
+    PendingIntent operation = 5;
+    // Metadata of the alarm listener whose onAlarm() method will be called when
+    // the alarm goes off.
+    AlarmListener listener = 6;
+  }
+}
+
+message AlarmCancelled {}
+
+message AlarmFired {}
+
+message PendingIntent {
+  // The package name of the PendingIntent, or empty if there is none
+  // associated with it.
+  string creator_package = 1;
+  // The uid of the PendingIntent, or -1 if there is none associated with it.
+  int32 creator_uid = 2;
+}
+
+message AlarmListener {
+  // String describing the alarm listener, used for logging and battery-use
+  // attribution.
+  string tag = 1;
+}
+
+// ======= WAKE LOCK EVENT =======
+
+message WakeLockAcquired {
+  enum Level {
+    UNDEFINED_WAKE_LOCK_LEVEL = 0;
+    PARTIAL_WAKE_LOCK = 1;
+    SCREEN_DIM_WAKE_LOCK = 2;
+    SCREEN_BRIGHT_WAKE_LOCK = 3;
+    FULL_WAKE_LOCK = 4;
+    PROXIMITY_SCREEN_OFF_WAKE_LOCK = 5;
+  }
+
+  enum CreationFlag {
+    UNDEFINED_WAKE_LOCK_CREATION_FLAG = 0;
+    ACQUIRE_CAUSES_WAKEUP = 1;
+    ON_AFTER_RELEASE = 2;
+  }
+
+  // Level for the wake lock instance initialization.
+  // https://developer.android.com/reference/android/os/PowerManager.html#newWakeLock(int,
+  // java.lang.String)
+  Level level = 1;
+  // Optional flags for the wake lock instance initialization, empty if no flag
+  // is set.
+  repeated CreationFlag flags = 2;
+  // Tag of the wake lock (which users may have set for debugging purposes).
+  string tag = 3;
+  // An optional timeout in milliseconds given to the acquire call. The lock
+  // will be released after the given timeout expires.
+  int64 timeout = 4;
+}
+
+message WakeLockReleased {
+  enum ReleaseFlag {
+    UNDEFINED_WAKE_LOCK_RELEASE_FLAG = 0;
+    RELEASE_FLAG_WAIT_FOR_NO_PROXIMITY = 1;
+  }
+
+  // Optional flags that modify the release behavior, empty if no flag is set.
+  // https://developer.android.com/reference/android/os/PowerManager.WakeLock.html#release(int)
+  repeated ReleaseFlag flags = 1;
+  // True if the wake lock is still held after the release. This may happen if
+  // the wake lock is reference counted and has been acquired multiple times.
+  bool is_held = 2;
+}
+
+// ======= DEBUG EVENT =======
+
+message DebugEvent {
+    string message = 1;
+}

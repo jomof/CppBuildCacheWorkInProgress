@@ -1,0 +1,27 @@
+apply plugin: 'com.android.tools.java-library'
+apply plugin: 'idea'
+apply plugin: 'application'
+
+dependencies {
+    implementation project(':base:project-test-lib')
+    implementation project(':base:common')
+
+    // Need an SLF4J implementation at runtime
+    runtimeOnly 'org.slf4j:slf4j-simple:1.7.2'
+
+    implementation 'junit:junit:4.12'
+}
+
+// this is needed by the app plugin but not used at runtime
+// (since we run this as unit tests), so the class name doesn't matter.
+mainClassName = "org.gradle.sample.Main"
+
+distZip.destinationDirectory.set(rootProject.ext.androidHostDist)
+
+applicationDistribution.from('build.xml')
+applicationDistribution.from(file('../tests/regular')) {
+    into 'tests'
+}
+
+task('dist').doLast {}
+dist.dependsOn distZip

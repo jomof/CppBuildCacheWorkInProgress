@@ -1,0 +1,18 @@
+apply plugin: 'com.android.tools.java-library'
+apply plugin: 'com.android.tools.publish'
+
+dependencies {
+    implementation project(':base:ddmlib')
+    implementation project(':base:annotations')
+    implementation project(':base:common')
+    implementation libs.guava
+
+    testImplementation libs.junit
+}
+
+group = 'com.android.tools.build'
+archivesBaseName = 'builder-test-api'
+version = rootProject.ext.buildVersion
+
+project.ext.pomName = 'Android Builder Test API library'
+project.ext.pomDesc = 'API for the Test extension point in the Builder library.'

@@ -1,0 +1,81 @@
+import com.android.tools.internal.testing.DevicePool;
+
+apply plugin: 'com.android.tools.java'
+apply plugin: 'com.android.tools.kotlin'
+apply plugin: 'com.google.protobuf'
+
+protobuf {
+    protoc {
+        artifact = libs.proto_compiler
+    }
+}
+
+repositories {
+    maven { url = uri(rootProject.cloneArtifacts.repository) }
+}
+
+dependencies {
+    compileOnly(project(':base:profile'))
+    implementation project(':analytics-library:protos')
+    implementation project(':apksig')
+    implementation project(':base:bazel:repolinker')
+    implementation project(':base:builder')
+    implementation project(':base:builder-model')
+    implementation project(':base:build-system:gradle-core')
+    implementation project(':base:sdk-common')
+    api project(':base:ddmlib')
+    implementation project(':base:sdklib')
+    implementation project(':base:testing-infrastructure:device-pool:device-provider')
+    implementation project(':base:testutils')
+    implementation project(':base:annotations')
+    implementation testFixtures(project(":base:repository"))
+
+    implementation libs.kotlin_stdlib
+
+    implementation gradleApi()
+    implementation libs.apache_commons_io
+    implementation libs.apache_commons_lang
+    implementation libs.asm_tree
+    implementation libs.google_api_client
+    implementation libs.google_storage_client
+    implementation libs.smali_dexlib
+    implementation libs.junit
+    implementation libs.protobuf
+    implementation libs.protobuf_util
+    implementation libs.truth
+    implementation libs.truth_java8_extension
+
+    testImplementation libs.mockito_core
+    testImplementation project(':base:common')
+
+    // Jacoco version should be the version bundled with Gradle.  Not the default version used by
+    // the plugin.
+    implementation 'org.jacoco:org.jacoco.agent:0.7.5.201505241946'
+
+    // Add dependency on plugin code.  Exclude transitive dependencies to avoid conflict due to
+    // Groovy versions.
+    implementation(project(':base:build-system:gradle-core')) {
+        transitive = false
+    }
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+configurations {
+    // google-api-client depends on guava-jdk5.
+    compile.exclude group: 'com.google.guava', module: 'guava-jdk5'
+}
+
+test {
+    environment << [TEST_TMPDIR: project.buildDir]
+}

@@ -1,0 +1,59 @@
+apply plugin: 'com.android.tools.java-library'
+apply plugin: 'com.android.tools.kotlin'
+apply plugin: 'com.android.tools.publish'
+apply plugin: 'sdk-java-lib'
+
+dependencies {
+    implementation project(':base:annotations')
+    implementation libs.kotlin_stdlib
+    testImplementation 'junit:junit:4.12'
+    testImplementation libs.guava
+    testImplementation project(':base:testutils')
+}
+
+group = 'com.android.tools.build'
+archivesBaseName = 'builder-model'
+version = rootProject.ext.buildVersion
+
+project.ext.pomName = 'Android Builder Model library'
+project.ext.pomDesc = 'Model for the Builder library.'
+
+project.ext.apiVersion = rootProject.ext.apiVersion ?: 0
+
+// because the model is passed from the IDE to Gradle, no matter
+// what version of Gradle Plugin is running, we need to keep this
+// as Java6 bytecode in case Studio 2.2 loads a project running
+// an older plugin in a JDK6 VM.
+compileJava {
+    sourceCompatibility = JavaVersion.VERSION_1_6
+    targetCompatibility = JavaVersion.VERSION_1_6
+}
+
+compileKotlin {
+    sourceCompatibility = JavaVersion.VERSION_1_6
+    targetCompatibility = JavaVersion.VERSION_1_6
+
+    kotlinOptions {
+        jvmTarget = "1.6"
+        apiVersion = "1.3"
+        languageVersion = "1.3"
+    }
+}
+
+["Model-Version": version, "Model-Api-Version": apiVersion].each { key, value ->
+    jar.manifest.attributes((key): value)
+    sdkJar.manifest.attributes((key): value)
+}
+
+task writeVersionProperties(type: com.android.tools.internal.VersionPropertiesWriter) {
+    outputFilePath = "com/android/builder/model/version.properties"
+    outputDirectory = project.layout.buildDirectory.dir("generated/resources")
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir(tasks.findByName("writeVersionProperties").getOutputDirectory())
+        }
+    }
+}

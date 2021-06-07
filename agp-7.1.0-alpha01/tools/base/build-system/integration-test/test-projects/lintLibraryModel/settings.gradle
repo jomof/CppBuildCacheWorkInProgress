@@ -1,0 +1,1 @@
+include ':app', ':mylibrary', ':transitiveLibrary', ':javalib', ':javalib2'

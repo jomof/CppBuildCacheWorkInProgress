@@ -1,0 +1,31 @@
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    ktlint
+}
+
+dependencies {
+    ktlint "com.pinterest:ktlint:0.40.0"
+}
+
+task formatJava(type: Exec) {
+    group = "verification"
+    description = "Format lint Java files"
+    executable = "java"
+    args = [ "-classpath", "../../../prebuilts/tools/common/google-java-format/google-java-format-all-deps.jar", "com.google.googlejavaformat.java.Main", "--replace", "--aosp"] + project.fileTree('.') { include '**/*.java' }.files
+}
+
+task formatKotlin(type: JavaExec, group: "verification") {
+    description = "Format lint Kotlin files"
+    classpath = configurations.ktlint
+    main = "com.pinterest.ktlint.Main"
+    args "-F", "**/*.kt"
+}
+
+task formatlint {
+    dependsOn formatJava
+    dependsOn formatKotlin
+    // TODO: Check in prebuilts for kdoc-formatter and use that here
+}

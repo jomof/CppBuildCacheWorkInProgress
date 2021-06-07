@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../app-inspection/agent/app-inspection.agent.iml" filepath="$PROJECT_DIR$/../app-inspection/agent/app-inspection.agent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../app-inspection/demo/livestore/inspector/app-inspection.demo.livestore.inspector.iml" filepath="$PROJECT_DIR$/../app-inspection/demo/livestore/inspector/app-inspection.demo.livestore.inspector.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../app-inspection/demo/livestore/library/app-inspection.demo.livestore.library.iml" filepath="$PROJECT_DIR$/../app-inspection/demo/livestore/library/app-inspection.demo.livestore.library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../app-inspection/demo/livestore/protocol/app-inspection.demo.livestore.protocol.iml" filepath="$PROJECT_DIR$/../app-inspection/demo/livestore/protocol/app-inspection.demo.livestore.protocol.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../app-inspection/tests/test-app/app-inspection.test-app.iml" filepath="$PROJECT_DIR$/../app-inspection/tests/test-app/app-inspection.test-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../app-inspection/tests/test-framework/app-inspection.test-framework.iml" filepath="$PROJECT_DIR$/../app-inspection/tests/test-framework/app-inspection.test-framework.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../app-inspection/tests/test-inspector/app-inspection.test-inspector.iml" filepath="$PROJECT_DIR$/../app-inspection/tests/test-inspector/app-inspection.test-inspector.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../app-inspection/tests/test-inspector/api/app-inspection.test-inspector.api.iml" filepath="$PROJECT_DIR$/../app-inspection/tests/test-inspector/api/app-inspection.test-inspector.api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../app-inspection/tests/app-inspection-test/app-inspection.tests.iml" filepath="$PROJECT_DIR$/../app-inspection/tests/app-inspection-test/app-inspection.tests.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../fakeandroid/fakeandroid.iml" filepath="$PROJECT_DIR$/../fakeandroid/fakeandroid.iml" />
+      <module fileurl="file://$PROJECT_DIR$/proto/proto.iml" filepath="$PROJECT_DIR$/proto/proto.iml" />
+      <module fileurl="file://$PROJECT_DIR$/test-framework/test-app/transport-test-app.iml" filepath="$PROJECT_DIR$/test-framework/test-app/transport-test-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/test-framework/transport-test-framework.iml" filepath="$PROJECT_DIR$/test-framework/transport-test-framework.iml" />
+    </modules>
+  </component>
+</project>

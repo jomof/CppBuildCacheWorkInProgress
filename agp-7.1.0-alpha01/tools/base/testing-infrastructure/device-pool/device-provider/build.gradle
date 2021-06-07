@@ -1,0 +1,20 @@
+apply plugin: 'com.android.tools.java-library'
+
+dependencies {
+    implementation gradleApi()
+    compileOnly project(":base:builder")
+    compileOnly project(":base:common")
+    compileOnly project(":base:ddmlib")
+    compileOnly project(":base:builder-test-api")
+    compileOnly project(":base:build-system:gradle-core")
+    compileOnly libs.guava
+}
+
+project.ext.pomName = 'Device provider library.'
+project.ext.pomDesc = 'Device provider library.'
+
+group = 'com.android.tools.internal.build.test'
+archivesBaseName = 'devicepool'
+version = '0.1'
+
+

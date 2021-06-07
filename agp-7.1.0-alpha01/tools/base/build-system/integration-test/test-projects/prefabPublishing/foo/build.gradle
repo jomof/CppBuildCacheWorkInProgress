@@ -1,0 +1,27 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    compileSdkVersion rootProject.latestCompileSdk
+    buildToolsVersion = rootProject.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion rootProject.latestCompileSdk
+    }
+
+    buildFeatures {
+        prefabPublishing true
+    }
+
+    prefab {
+        foo {
+            headers "src/main/cpp/include"
+        }
+
+        foo_static {
+            headers "src/main/cpp/include"
+        }
+    }
+}

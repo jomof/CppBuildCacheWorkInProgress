@@ -1,0 +1,49 @@
+> AndroidProject:
+   > defaultConfig:
+      - sourceProvider:
+         - mlModelsDirectories:
+            * {PROJECT}/src/main/ml{!}{ADDED}
+      - androidTestSourceProvider:
+         - mlModelsDirectories:
+            * {PROJECT}/src/androidTest/ml{!}{ADDED}
+      - unitTestSourceProvider:
+         - mlModelsDirectories:
+            * {PROJECT}/src/test/ml{!}{ADDED}
+      - testFixturesSourceProvider:
+         - mlModelsDirectories:
+            * {PROJECT}/src/testFixtures/ml{!}{ADDED}
+   < defaultConfig
+   > buildTypes:
+      > debug:
+         - sourceProvider:
+            - mlModelsDirectories:
+               * {PROJECT}/src/debug/ml{!}{ADDED}
+         - androidTestSourceProvider:
+            - mlModelsDirectories:
+               * {PROJECT}/src/androidTestDebug/ml{!}{ADDED}
+         - unitTestSourceProvider:
+            - mlModelsDirectories:
+               * {PROJECT}/src/testDebug/ml{!}{ADDED}
+         - testFixturesSourceProvider:
+            - mlModelsDirectories:
+               * {PROJECT}/src/testFixturesDebug/ml{!}{ADDED}
+      < debug
+      > release:
+         - sourceProvider:
+            - mlModelsDirectories:
+               * {PROJECT}/src/release/ml{!}{ADDED}
+         - androidTestSourceProvider:
+            - mlModelsDirectories:
+               * {PROJECT}/src/androidTestRelease/ml{!}{ADDED}
+         - unitTestSourceProvider:
+            - mlModelsDirectories:
+               * {PROJECT}/src/testRelease/ml{!}{ADDED}
+         - testFixturesSourceProvider:
+            - mlModelsDirectories:
+               * {PROJECT}/src/testFixturesRelease/ml{!}{ADDED}
+      < release
+   < buildTypes
+   - flags:
+      * "ML_MODEL_BINDING -> true"{ADDED}
+      * "ML_MODEL_BINDING -> false"{REMOVED}
+< AndroidProject

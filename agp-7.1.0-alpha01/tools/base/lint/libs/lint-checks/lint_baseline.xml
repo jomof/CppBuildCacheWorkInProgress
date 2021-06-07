@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="5" by="lint 7.0.0-dev">
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/ArraySizeDetector.java"
+            line="163"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/ArraySizeDetector.java"
+            line="272"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/ArraySizeDetector.java"
+            line="307"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/FirebaseAnalyticsDetector.java"
+            line="335"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/FirebaseAnalyticsDetector.java"
+            line="375"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/GridLayoutDetector.java"
+            line="107"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/GridLayoutDetector.java"
+            line="120"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/IconDetector.java"
+            line="1014"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/IconDetector.java"
+            line="1089"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/IconDetector.java"
+            line="2147"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/IconDetector.java"
+            line="2157"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/NetworkSecurityConfigDetector.java"
+            line="468"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/OverrideConcreteDetector.java"
+            line="131"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/RelativeOverlapDetector.java"
+            line="117"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/SizeConstraint.java"
+            line="142"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/SizeConstraint.java"
+            line="157"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/StateListDetector.java"
+            line="128"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/TooManyViewsDetector.java"
+            line="131"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/TooManyViewsDetector.java"
+            line="138"/>
+    </issue>
+
+    <issue
+        id="FileComparisons"
+        message="Do not compare java.io.File with `equals` or `==`: will not work correctly on case insensitive file systems! See `go/files-howto`.">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/DuplicateIdDetector.java"
+            line="483"/>
+    </issue>
+
+    <issue
+        id="FileComparisons"
+        message="Do not compare java.io.File with `equals` or `==`: will not work correctly on case insensitive file systems! See `go/files-howto`.">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/DuplicateIdDetector.java"
+            line="602"/>
+    </issue>
+
+    <issue
+        id="FileComparisons"
+        message="Do not compare java.io.File with `equals` or `==`: will not work correctly on case insensitive file systems! See `go/files-howto`.">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/DuplicateResourceDetector.java"
+            line="132"/>
+    </issue>
+
+    <issue
+        id="FileComparisons"
+        message="Do not compare java.io.File with `equals` or `==`: will not work correctly on case insensitive file systems! See `go/files-howto`.">
+        <location
+            file="libs/lint-checks/src/main/java/com/android/tools/lint/checks/RequiredAttributeDetector.java"
+            line="321"/>
+    </issue>
+
+</issues>

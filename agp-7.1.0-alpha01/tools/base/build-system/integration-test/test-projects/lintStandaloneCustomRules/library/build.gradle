@@ -1,0 +1,33 @@
+plugins {
+    id 'java-library'
+    id 'com.android.lint'
+    id 'maven-publish'
+}
+
+lintOptions {
+    textReport true
+    textOutput file("lint-results.txt")
+    checkOnly 'UnitTestLintCheck2', 'UseValueOf'
+    absolutePaths false
+    abortOnError false
+}
+
+dependencies {
+	lintChecks project(':lint')
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'org.example.sample'
+            artifactId = 'library'
+            version = '0.1'
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url = rootProject.file("repo")
+        }
+    }
+}

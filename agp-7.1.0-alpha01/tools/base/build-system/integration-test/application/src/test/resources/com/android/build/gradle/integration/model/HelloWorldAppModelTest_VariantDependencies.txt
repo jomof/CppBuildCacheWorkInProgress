@@ -1,0 +1,47 @@
+> VariantDependencies:
+   - name                 = "debug"
+   - mainArtifact:
+      - compileDependencies = []
+      - runtimeDependencies = []
+   - androidTestArtifact:
+      - compileDependencies:
+         - {BUILD_0}@@:::debug:
+            - artifactAddress      = {BUILD_0}@@:::debug
+            - requestedCoordinates = (null)
+            - dependencies         = []
+      - runtimeDependencies = []
+   - unitTestArtifact:
+      - compileDependencies:
+         - {BUILD_0}@@:::debug:
+            - artifactAddress      = {BUILD_0}@@:::debug
+            - requestedCoordinates = (null)
+            - dependencies         = []
+      - runtimeDependencies = []
+   - testFixturesArtifact = (null)
+< VariantDependencies
+> GlobalLibraryMap:
+   > libraries:
+      > {BUILD_0}@@:::debug:
+         - type                = PROJECT
+         - artifactAddress     = {BUILD_0}@@:::debug
+         - artifact            = (null)
+         - buildId             = {BUILD_0}
+         - projectPath         = ":"
+         - variant             = "debug"
+         - compileJarFiles     = (null)
+         - runtimeJarFiles     = (null)
+         - manifest            = (null)
+         - resFolder           = (null)
+         - resStaticLibrary    = (null)
+         - assetsFolder        = (null)
+         - jniFolder           = (null)
+         - aidlFolder          = (null)
+         - renderscriptFolder  = (null)
+         - proguardRules       = (null)
+         - lintJar             = (null)
+         - externalAnnotations = (null)
+         - publicResources     = (null)
+         - symbolFile          = (null)
+      < {BUILD_0}@@:::debug
+   < libraries
+< GlobalLibraryMap

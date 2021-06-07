@@ -1,0 +1,307 @@
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
+plugins {
+    id 'com.android.tools.java-library'
+    id 'com.android.tools.kotlin'
+    id 'com.android.tools.publish'
+    id 'java-gradle-plugin'
+    id 'license-report'
+    id 'com.google.protobuf'
+    id 'idea'
+}
+
+idea.module {
+    generatedSourceDirs += new File(protobuf.generatedFilesBaseDir)
+}
+
+configurations {
+    provided
+    includeInJar
+    includeInJarSources {
+        attributes {
+            attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.SOURCES))
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION))
+        }
+    }
+}
+
+licenseReport {
+    ignored = libs.trove4j
+}
+
+// Set the version of the plugin in the manifest. This is used by 3rd party plugin (like Kotlin)
+jar.manifest.attributes("Plugin-Version": version)
+jar.manifest.attributes("Inception-Date": DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now()));
+
+
+// Incremental update test support
+File classesDir = new File(project.buildDir, "classes/incremental-test")
+File baseClasses = new File(classesDir, "base")
+File baseInstrumentedClasses = new File(classesDir, "baseInstrumented")
+
+sourceSets {
+    main {
+        java.srcDirs += 'src/fromGradle/java'
+        resources.srcDirs = ['src/main/resources', 'src/fromGradle/resources']
+        compileClasspath += configurations.provided
+    }
+
+    test {
+        compileClasspath += files(baseClasses)
+        runtimeClasspath += files(baseInstrumentedClasses)
+    }
+
+    apiTest {
+        java.srcDirs += 'src/apiTest/kotlin'
+        resources.srcDirs += 'src/apiTest/resources'
+        compileClasspath += test.compileClasspath
+        runtimeClasspath += test.runtimeClasspath
+    }
+}
+
+task apiTest(type: Test) {
+    testClassesDirs = sourceSets.apiTest.output.classesDirs
+    classpath = sourceSets.apiTest.runtimeClasspath
+}
+
+check.dependsOn apiTest
+
+publishing {
+    publications {
+        withType(MavenPublication) {
+            artifactId = 'gradle'
+        }
+    }
+}
+
+/**
+ * Although this DSL will generated META-INF/gradle-plugins descriptors, we still keep them
+ * in our sources because AGP is also built with bazel which does not know how to generate plugin
+ * descriptors.
+ */
+gradlePlugin {
+    testSourceSets sourceSets.apiTest
+    plugins {
+        comAndroidApplication {
+            id = "com.android.application"
+            implementationClass = "com.android.build.gradle.AppPlugin"
+        }
+        comAndroidLibrary {
+            id = "com.android.library"
+            implementationClass = "com.android.build.gradle.LibraryPlugin"
+        }
+        comAndroidDynamicFeature {
+            id = "com.android.dynamic-feature"
+            implementationClass = "com.android.build.gradle.DynamicFeaturePlugin"
+        }
+        comAndroidAssetPack {
+            id = "com.android.asset-pack"
+            implementationClass = "com.android.build.gradle.AssetPackPlugin"
+        }
+        comAndroidAssetOnlyBundle {
+            id = "com.android.asset-pack-bundle"
+            implementationClass = "com.android.build.gradle.AssetPackBundlePlugin"
+        }
+        comAndroidLint {
+            id = "com.android.lint"
+            implementationClass = "com.android.build.gradle.LintPlugin"
+        }
+        comAndroidTest {
+            id = "com.android.test"
+            implementationClass = "com.android.build.gradle.TestPlugin"
+        }
+    }
+}
+
+
+dependencies {
+    api project(':base:builder')
+    api project(':base:builder-model')
+    implementation project(':base:sdk-common')
+    implementation project(':base:sdklib')
+    implementation project(':base:repository')
+    implementation project(':base:ddmlib')
+    implementation project(':base:build-system:aapt2-proto')
+    implementation project(':base:build-system:aaptcompiler')
+    implementation project(':analytics-library:crash')
+    implementation project(':analytics-library:shared')
+    implementation project(':base:lint-model')
+    api project(':base:gradle-api')
+    implementation project(':dataBinding:compilerCommon')
+    implementation project(':dataBinding:baseLibrary')
+    implementation project(':dataBinding:baseLibrarySupport')
+    implementation project(':base:builder-test-api')
+    implementation project(':base:layoutlib-api')
+    implementation project(':base:utp:android-device-provider-gradle-proto')
+    implementation project(':base:utp:android-test-plugin-host-coverage-proto')
+    implementation project(':base:utp:android-test-plugin-host-retention-proto')
+    implementation project(':base:utp:android-test-plugin-result-listener-gradle-proto')
+
+    implementation gradleApi()
+    implementation libs.kotlin_stdlib
+    implementation libs.transform_api_deprecated
+    implementation libs.apache_httpmime
+    implementation libs.apache_commons_io
+    implementation libs.asm
+    implementation libs.asm_analysis
+    implementation libs.asm_commons
+    implementation libs.asm_util
+    implementation libs.bouncycastle_pkix
+    implementation libs.jaxb_runtime
+    implementation libs.jopt
+    implementation libs.bundle_tool
+    implementation libs.jetifier_core
+    implementation libs.jetifier_processor
+    implementation libs.javapoet
+    implementation libs.protobuf
+    implementation libs.protobuf_util
+    implementation libs.grpc
+    implementation libs.tink
+    implementation libs.unified_test_platform
+
+    compileOnly libs.kotlin_gradle_plugin
+    compileOnly libs.jacoco_core
+    compileOnly libs.jacoco_report
+    // already packaged in (':base:builder')
+    compileOnly project(':base:profile')
+
+    testImplementation libs.junit
+    testImplementation libs.truth
+    testImplementation libs.kotlin_test
+    testImplementation libs.mockito_core
+    testImplementation libs.guava
+    testImplementation libs.jimfs
+    testImplementation libs.equalsverifier
+    testImplementation project(':base:project-test-lib')
+    testImplementation project(':base:testutils')
+    testImplementation 'org.jetbrains:annotations:13.0'
+    testImplementation libs.bouncycastle_prov
+    testImplementation libs.jsoup
+    testImplementation libs.jacoco_core
+    testImplementation libs.jacoco_report
+    testImplementation libs.kotlin_gradle_plugin
+    testImplementation testFixtures(project(":base:repository"))
+    apiTestImplementation project(":base:apkparser:apkanalyzer")
+    apiTestImplementation project(":base:apkparser:apkanalyzer-cli")
+    testCompileOnly project(':base:profile')
+
+    // mlkit-common
+    includeInJar(project(':base:mlkit-common')) {
+        transitive = false
+    }
+    includeInJarSources(project(path:':base:mlkit-common')) {
+        transitive = false
+    }
+    includeInJar(project(':base:profgen')) {
+        transitive = false
+    }
+    includeInJarSources(project(':base:profgen')) {
+        transitive = false
+    }
+    implementation libs.flatbuffers
+    implementation libs.tensorflow_lite_metadata
+}
+
+protobuf {
+    protoc {
+        artifact = libs.proto_compiler
+    }
+}
+
+group = 'com.android.tools.build'
+version = rootProject.ext.buildVersion
+
+project.ext.pomName = 'Gradle Plug-in for Android'
+project.ext.pomDesc = 'Gradle plug-in to build Android applications.'
+project.ext.customArtifactId = 'gradle'
+
+test {
+    environment("CUSTOM_REPO",
+            new File(rootProject.ext.androidHostOut, "repo").toString()
+                    + File.pathSeparator
+                    + rootProject.file("../prebuilts/tools/common/m2/repository/").toString())
+
+
+    testLogging {
+        events "failed"
+    }
+
+    maxParallelForks = Runtime.runtime.availableProcessors() / 2
+
+    exclude "**/GradleCoreBazelSuite*"
+
+    maxHeapSize = "2048m"
+}
+
+File apiTestsOutDir = new File(rootProject.ext.androidHostOut, "apiTests")
+apiTestsOutDir.mkdirs()
+
+clean {
+    delete apiTestsOutDir
+}
+
+apiTest {
+    // Gradle embeds kotlin when dealing with kts files and that version can be different from
+    // the version Android Studio bundles. This is usually not an issue, but when generating
+    // build.gradle.kts files, we need to use the bundled Android Studio version so all dependencies
+    // are present in prebuilts.
+    environment("KOTLIN_PLUGIN", libs.kotlin_gradle_plugin)
+
+    maxParallelForks = Runtime.runtime.availableProcessors()
+
+    environment("API_TESTS_OUTDIR", apiTestsOutDir.toString())
+
+    environment("CUSTOM_REPO",
+            new File(rootProject.ext.androidHostOut, "repo").toString()
+                    + File.pathSeparator
+                    + rootProject.file("../prebuilts/tools/common/m2/repository/").toString())
+
+    dependsOn ':publishAndroidGradleLocal'
+}
+
+tasks.processResources {
+    from(rootProject.file("../prebuilts/tools/common/aapt/aapt2_version.properties")) {
+        into "com/android/build/gradle/internal/res/"
+    }
+}
+
+// Incremental update test support
+javadoc {
+    classpath += configurations.provided
+}
+
+// setup annotation processor output directory
+File generatedSources = new File(project.buildDir, 'generated/generated')
+tasks.compileJava {
+    doFirst {
+        generatedSources.mkdirs()
+    }
+    options.compilerArgs += ['-s', generatedSources]
+    outputs.dir(generatedSources)
+}
+
+validatePlugins {
+    // Enable strict mode so we can see more warnings
+    enableStricterValidation = true
+}
+
+// Support for embedding other gradle project classes.
+sourceSets.main.compileClasspath += configurations.includeInJar
+sourceSets.test.compileClasspath += configurations.includeInJar
+sourceSets.test.runtimeClasspath += configurations.includeInJar
+
+tasks.jar {
+    dependsOn configurations.includeInJar
+    from {
+        configurations.includeInJar.collect({zipTree(it)})
+    }
+}
+
+tasks.sourcesJar {
+    dependsOn configurations.includeInJarSources
+    from {
+        configurations.includeInJarSources.collect({zipTree(it)})
+    }
+}
+

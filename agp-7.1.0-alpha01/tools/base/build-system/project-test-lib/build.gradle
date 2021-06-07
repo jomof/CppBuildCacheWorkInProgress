@@ -1,0 +1,16 @@
+apply plugin: 'com.android.tools.java-library'
+apply plugin: 'idea'
+
+dependencies {
+    implementation project(':base:builder-model')
+    implementation project(':base:common')
+
+    testImplementation 'junit:junit:4.12'
+
+    // Need an SLF4J implementation at runtime
+    testRuntimeOnly 'org.slf4j:slf4j-simple:1.7.2'
+    implementation libs.gradle_tooling_api
+
+}
+
+test.dependsOn ':publishLocal'

@@ -1,0 +1,12 @@
+apply plugin: 'com.android.tools.java-library'
+
+dependencies {
+    implementation libs.flatbuffers
+    implementation libs.tensorflow_lite_metadata
+    implementation project(':base:common')
+
+    testImplementation project(':base:testutils')
+    testImplementation libs.junit
+    testImplementation libs.apache_commons_io
+    testImplementation libs.mockito_core
+}

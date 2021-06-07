@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="5" by="lint 4.2.0-dev">
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="manifest-merger/src/main/java/com/android/manifmerger/PostValidator.java"
+            line="291"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="manifest-merger/src/main/java/com/android/manifmerger/PostValidator.java"
+            line="307"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="manifest-merger/src/main/java/com/android/manifmerger/PostValidator.java"
+            line="342"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="manifest-merger/src/main/java/com/android/manifmerger/PostValidator.java"
+            line="358"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="manifest-merger/src/main/java/com/android/manifmerger/PreValidator.java"
+            line="273"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="manifest-merger/src/main/java/com/android/manifmerger/PreValidator.java"
+            line="289"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="manifest-merger/src/main/java/com/android/manifmerger/XmlElement.java"
+            line="764"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="manifest-merger/src/main/java/com/android/manifmerger/XmlElement.java"
+            line="778"/>
+    </issue>
+
+</issues>

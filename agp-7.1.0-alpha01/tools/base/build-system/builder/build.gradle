@@ -1,0 +1,133 @@
+apply plugin: 'com.android.tools.java-library'
+apply plugin: 'com.android.tools.kotlin'
+apply plugin: 'com.android.tools.publish'
+apply plugin: 'java-test-fixtures'
+
+dependencies {
+    implementation project(':base:builder-model')
+    implementation project(':base:builder-test-api')
+
+    implementation project(':base:sdklib')
+    implementation project(':base:sdk-common')
+    implementation project(':base:common')
+    api project(':base:manifest-merger')
+    implementation project(':base:ddmlib')
+    api project(':base:zipflinger')
+    implementation project(':base:signflinger')
+
+    implementation project(':analytics-library:protos')
+    implementation project(':analytics-library:tracker')
+    implementation project(':base:layoutlib-api')
+    api project(':apksig')
+    api project(':apkzlib')
+
+    implementation libs.kotlin_stdlib
+    api libs.javawriter
+    implementation libs.bouncycastle_pkix
+    implementation libs.apache_commons_codec
+    implementation libs.bouncycastle_prov
+    implementation libs.asm
+    implementation libs.asm_tree
+    implementation libs.javax_inject
+    // R8 deps
+    implementation libs.asm_commons
+    implementation libs.asm_util
+    implementation libs.fastutil
+    implementation libs.jopt
+    implementation libs.json_simple
+
+    testImplementation libs.kotlin_test
+    testImplementation libs.junit
+    testImplementation libs.mockito_core
+    testImplementation libs.truth
+    testImplementation libs.equalsverifier
+    testImplementation libs.jimfs
+    testImplementation project(':base:testutils')
+    testImplementation testFixtures(project(":base:repository"))
+}
+
+test {
+    maxParallelForks = Runtime.runtime.availableProcessors() / 2
+    maxHeapSize = "2048m"
+}
+
+group = 'com.android.tools.build'
+archivesBaseName = 'builder'
+version = rootProject.ext.buildVersion
+
+project.ext.pomName = 'Android Builder library'
+project.ext.pomDesc = 'Library to build Android applications.'
+
+def generated = new File("${project.buildDir}/generated")
+def generatedSources = new File("${generated}/generated")
+def generatedResources = new File("${generated}/resources")
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/dex/java'
+        }
+        resources {
+            srcDir generatedResources
+        }
+    }
+}
+
+// setup annotation processor output directory
+tasks.compileJava {
+    doFirst {
+        generatedSources.mkdirs()
+    }
+    options.compilerArgs += ['-s', generatedSources]
+    outputs.dir(generatedSources)
+}
+
+jar.manifest.attributes("Builder-Version": version)
+
+configurations {
+    provided
+    sourcesProvided {
+        attributes {
+            attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.SOURCES))
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION))
+        }
+    }
+    resourcesRuntime
+}
+
+dependencies {
+    provided(project(':base:profile')) {
+        transitive = false
+    }
+
+    sourcesProvided(project(path:':base:profile')) {
+        transitive = false
+    }
+
+    provided(files('../../../../prebuilts/r8/r8.jar'))
+}
+
+sourceSets.main.compileClasspath += configurations.provided
+sourceSets.test.compileClasspath += configurations.provided
+sourceSets.test.runtimeClasspath += configurations.provided
+tasks.compileJava.dependsOn(configurations.provided)
+tasks.sourcesJar.dependsOn(configurations.sourcesProvided)
+
+tasks.jar {
+    from {
+        configurations.provided.collect({zipTree(it)})
+    }
+    from {
+        configurations.resourcesRuntime
+    }
+}
+
+tasks.sourcesJar {
+    from({
+        configurations.sourcesProvided.collect({zipTree(it)})
+    })
+}
+
+javadoc {
+    classpath += configurations.provided
+}

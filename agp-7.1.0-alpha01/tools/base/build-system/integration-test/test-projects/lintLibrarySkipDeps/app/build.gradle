@@ -1,0 +1,34 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion rootProject.latestCompileSdk
+    buildToolsVersion = rootProject.buildToolsVersion
+    defaultConfig {
+        applicationId "com.android.test.lint.libmodel.app"
+        minSdkVersion 15
+        //noinspection ExpiringTargetSdkVersion,ExpiredTargetSdkVersion
+        targetSdkVersion 24
+    }
+    lintOptions {
+        textReport true
+        textOutput file("lint-results.txt")
+        // Note that we have the presence of an id='RequiredSize' error in the
+        // app project, but that issue should be off by default in Gradle projects;
+        // this test makes sure of that (it should not be reported).
+        // We've also planted deliberate errors with id='Assert' and id='SdCardPath'
+        // in the dependent projects; this test ensures that those are not flagged
+        // here since checkDependencies=false below.
+        disable 'GradleDependency', 'UnusedResources', 'HardcodedText'
+        absolutePaths false
+        explainIssues false
+        checkDependencies false
+    }
+}
+
+dependencies {
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    api "com.android.support:appcompat-v7:${rootProject.supportLibVersion}"
+    testImplementation 'junit:junit:4.12'
+    api project(':javalib')
+    api project(':mylibrary')
+}

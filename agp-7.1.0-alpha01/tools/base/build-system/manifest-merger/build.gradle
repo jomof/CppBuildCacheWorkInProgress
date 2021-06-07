@@ -1,0 +1,34 @@
+apply plugin: 'com.android.tools.java-library'
+apply plugin: 'com.android.tools.kotlin'
+apply plugin: 'com.android.tools.publish'
+apply plugin: 'sdk-java-lib'
+
+group = 'com.android.tools.build'
+archivesBaseName = 'manifest-merger'
+version = rootProject.ext.baseVersion
+
+dependencies {
+    implementation project(':base:common')
+    implementation project(':base:sdklib')
+    implementation project(':base:sdk-common')
+    implementation libs.gson
+    implementation libs.kotlin_stdlib
+    implementation libs.kxml
+
+    testImplementation libs.junit
+    testImplementation libs.truth
+    testImplementation libs.mockito_core
+    testImplementation project(':base:testutils')
+}
+
+sourceSets {
+    main.resources.srcDir 'src/main/java'
+    test.resources.srcDir 'src/test/java'
+}
+
+test {
+    maxParallelForks = Runtime.runtime.availableProcessors() / 2
+}
+
+project.ext.pomName = 'Android Tools Manifest Merger library'
+project.ext.pomDesc = 'A Library to merge Android manifests.'
