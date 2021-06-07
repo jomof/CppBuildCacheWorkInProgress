@@ -77,8 +77,14 @@ Resources:
 Android Gradle Plugin's C++ specific responsibilities are:
 1) The "configure" (called externalNativeJsonGenerator) task invokes CMake to produce a set 
    of Ninja projects. There is one Ninja project per target ABI, per variant.
+   ```bash
+    ./gradlew configureCMakeDebug
+    ```
 2) The "build" task execs ninja.exe for each relevant project.
-The result of (2) is typically a set of .so files that are packaged into the final APK.
+   ```bash
+    ./gradlew buildCMakeDebug
+    ```
+The result of (2) is typically a set of .so files that can be packaged into the final APK.
 
 ## Build HelloWorld Sample
 ### Build Prerequisites
