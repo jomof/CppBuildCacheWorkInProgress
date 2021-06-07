@@ -3,6 +3,11 @@ This repo describes the Android Gradle C++ build process from the perspective of
 someone who knows Gradle, Android Java build, and basics of C/C++ development but without
 knowing the Android specific build aspects.
 
+Major elements of this repo:
+- [An example Android Gradle C++ Project](https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld)
+- [A Github Action that sets up prerequisites and builds it](https://github.com/jomof/CppBuildCacheWorkInProgress/actions)
+- Details of the pieces of the build system belo in this README.
+
 ## Ninja, CMake, Gradle
 This section describes the build tools we use from the lowest level (Ninja) to the 
 highest (Gradle). 
@@ -18,7 +23,7 @@ c) To understand which .o files are out of date
 d) To build, with parallelization, just the .o files that are out of date
 
 Ninja is widely recognized as the best tool for high-performance, parallel, incremental,
-C/C++ build.
+C/C++ build scheduling.
 
 In order to achieve (b) Ninja invokes clang++ with the -E flag the first time a .o file 
 is compiled from a .cpp. For subsequent builds, the -E flag is not used unless Ninja detects
