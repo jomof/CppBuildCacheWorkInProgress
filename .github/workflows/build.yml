@@ -39,3 +39,5 @@ jobs:
       run: |
         cd HelloWorld
         ${{ matrix.call_gradle }} assemble 
+      if: always()    
+    
