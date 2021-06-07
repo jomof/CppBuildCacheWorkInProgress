@@ -29,7 +29,7 @@ The Ninja project is meant to be reused across clean calls so, in our case, it's
 outside the normal build/ folder in a folder named .cxx/.
 
 Resources:
-- [ninja.org](https://ninja.org)
+- [ninja.org](https://ninja-build.org/)
 - Ninja build files for our HelloWorld project:
   HelloWorld/app/.cxx/Debug/3z5c3158/x86/build.ninja
   HelloWorld/app/.cxx/Debug/3z5c3158/x86/CMakeFiles/rules.ninja
