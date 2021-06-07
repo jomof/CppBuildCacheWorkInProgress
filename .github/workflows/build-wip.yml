@@ -21,7 +21,7 @@ jobs:
         include:
           - os: windows-latest
             call_gradle: gradlew
-            call_sdk_manager: ${ANDROID_HOME}\tools\bin\sdkmanager 
+            call_sdk_manager: ${ANDROID_HOME}/tools/bin/sdkmanager 
           - os: ubuntu-latest
             call_gradle: ./gradlew
             call_sdk_manager: ${ANDROID_HOME}/tools/bin/sdkmanager 
