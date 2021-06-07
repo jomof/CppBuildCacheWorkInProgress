@@ -21,6 +21,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
+      - name: Partial Checkout
+          REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+          git clone --filter=blob:none --no-checkout --depth 1  --sparse $REPO .
+          git sparse-checkout init --cone
+          git sparse-checkout add "HelloWorld" 
+          git checkout
+      
       - name: Install NDK
         run: ${ANDROID_HOME}/tools/bin/sdkmanager "ndk;21.4.7075529"
         
