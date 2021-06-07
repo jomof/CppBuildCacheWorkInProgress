@@ -39,9 +39,6 @@ Resources:
   [HelloWorld/app/.cxx/Debug/3z5c3158/x86/.ninja_deps](https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld/app/.cxx/Debug/3z5c3158/x86/.ninja_deps/native-lib.cpp.o)
 - The location of the result .o: [HelloWorld/app/.cxx/Debug/3z5c3158/x86/CMakeFiles/native-lib.dir/native-lib.cpp.o](https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld/app/.cxx/Debug/3z5c3158/x86/CMakeFiles/native-lib.dir/native-lib.cpp.o)
 
-
-
-
 ### CMake, the meta C++ build-system
 CMake is a C/C++ meta build-system. The term meta is used because CMake generates a build
 system and doesn't directly compile .cpp to .o itself.
@@ -53,6 +50,14 @@ b) To provide reflection on those build relationships so that IDEs can present t
    to users in a helpful way. This includes project structure tree features and language 
    service features like autocompletion.
 In our case, CMake generates a Ninja project.
+
+CMake's configuration phase is typically quite slow because it does things like test the
+clang compiler for features and usually ends up invoking clang++.exe many times.
+
+Resources:
+- [CMake.org](https://cmake.org)
+- User maintained build file: [HelloWorld/app/src/main/cpp/CMakeLists.txt](https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld/app/src/main/cpp/CMakeLists.txt)
+- CMake-generated build reflection: [HelloWorld/app/.cxx/Debug/3z5c3158/x86/.cmake/api/v1/]((https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld/app/.cxx/Debug/3z5c3158/x86/.cmake/api/v1/))
 
 ### Android Gradle Plugin integrates C++ build with Java\Kotlin build
 Android Gradle Plugin's C++ specific responsibilities are:
