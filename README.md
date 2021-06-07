@@ -5,8 +5,10 @@ knowing the Android specific build aspects.
 
 Major elements of this repo:
 - [An example Android Gradle C++ Project](https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld)
+  Relevant build outputs that wouldn't usually be checked in are also here you can see 
+  where they are and what they look like. 
 - [A Github Action that sets up prerequisites and builds it](https://github.com/jomof/CppBuildCacheWorkInProgress/actions)
-- Details of the pieces of the build system belo in this README.
+- Details of the pieces of the build system below in this README.
 
 ## Ninja, CMake, Gradle
 This section describes the build tools we use from the lowest level (Ninja) to the 
