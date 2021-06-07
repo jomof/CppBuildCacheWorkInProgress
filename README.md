@@ -6,7 +6,7 @@ knowing the Android specific build aspects.
 Major elements of this repo:
 - [An example Android Gradle C++ Project](https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld)
   Relevant build outputs that wouldn't usually be checked in are also here you can see 
-  where they are and what they look like. 
+  where they are and what they look like relative to other files in the build. 
 - [A Github Action that sets up prerequisites and builds it](https://github.com/jomof/CppBuildCacheWorkInProgress/actions)
 - Details of the pieces of the build system below in this README.
 
@@ -67,7 +67,11 @@ clang compiler for features and usually ends up invoking clang++.exe many times.
 Resources:
 - [CMake.org](https://cmake.org)
 - User maintained build file: [HelloWorld/app/src/main/cpp/CMakeLists.txt](https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld/app/src/main/cpp/CMakeLists.txt)
-- CMake-generated build reflection: [HelloWorld/app/.cxx/Debug/3z5c3158/x86/.cmake/api/v1/]((https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld/app/.cxx/Debug/3z5c3158/x86/.cmake/api/v1/))
+- CMake-generated build reflection: 
+  
+  [HelloWorld/app/.cxx/Debug/3z5c3158/x86/.cmake/api/v1/](https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld/app/.cxx/Debug/3z5c3158/x86/.cmake/api/v1/)
+  [HelloWorld/app/.cxx/Debug/3z5c3158/x86/compile_commands.json](https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld/app/.cxx/Debug/3z5c3158/x86/compile_commands.json)
+
 
 ### Android Gradle Plugin integrates C++ build with Java\Kotlin build
 Android Gradle Plugin's C++ specific responsibilities are:
@@ -76,7 +80,8 @@ Android Gradle Plugin's C++ specific responsibilities are:
 2) The "build" task execs ninja.exe for each relevant project.
 The result of (2) is typically a set of .so files that are packaged into the final APK.
 
-## Build Prerequisites
+## Build HelloWorld Sample
+### Build Prerequisites
 Android Gradle Plugin C/C++ has two prerequisites that typical Java\Kotlin
 projects don't have.
 
@@ -96,7 +101,10 @@ then find the required NDK version in the tree view under 'NDK (Side by side)'.
 
 Repeat the process above for CMake 3.18.1.
 
-## Build
+In a CI environment, these prerequisites will typically by installed by a command-line
+tool installed with Android Studio called 'sdkmanager'.
+
+### Build
 In order to build:
 ```
 cd HelloWorld
