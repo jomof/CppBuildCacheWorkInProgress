@@ -35,3 +35,10 @@ jobs:
         run: |
           cd HelloWorld
           ./gradlew assemble
+          
+      - name: Upload Final Build State
+        uses: actions/upload-artifact@v1
+        with:
+          name: final_state
+          path: ./
+        if: always()
