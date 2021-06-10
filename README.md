@@ -72,6 +72,7 @@ Resources:
 - CMake-generated build reflection: 
   
   [HelloWorld/app/.cxx/Debug/3z5c3158/x86/.cmake/api/v1/](https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld/app/.cxx/Debug/3z5c3158/x86/.cmake/api/v1/)
+  
   [HelloWorld/app/.cxx/Debug/3z5c3158/x86/compile_commands.json](https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld/app/.cxx/Debug/3z5c3158/x86/compile_commands.json)
 
 
