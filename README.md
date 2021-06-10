@@ -74,6 +74,19 @@ Resources:
   [HelloWorld/app/.cxx/Debug/3z5c3158/x86/.cmake/api/v1/](https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld/app/.cxx/Debug/3z5c3158/x86/.cmake/api/v1/)
   
   [HelloWorld/app/.cxx/Debug/3z5c3158/x86/compile_commands.json](https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld/app/.cxx/Debug/3z5c3158/x86/compile_commands.json)
+  
+#### A Brief Aside on compile_commands.json
+The file [compile_commands.json](https://github.com/jomof/CppBuildCacheWorkInProgress/blob/main/HelloWorld/app/.cxx/Debug/3z5c3158/x86/compile_commands.json), created by CMake during the 'configureCMakeDebug' task, contains each output .o file along with the .cpp and Clang flags needed to build it.
+Here's a what it looks like
+```
+{
+  "directory": "/Users/jomof/AndroidStudioProjects/CppBuildCacheWorkInProgress/HelloWorld/app/.cxx/Debug/3z5c3158/x86",
+  "command": "/path/to/clang/clang++ --target=i686-none-linux-android16 --gcc-toolchain=/path/to/ndk/21.4.7075529/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/path/to/ndk/21.4.7075529/toolchains/llvm/prebuilt/darwin-x86_64/sysroot -Dnative_lib_EXPORTS -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -O0 -fno-limit-debug-info  -fPIC -o CMakeFiles/native-lib.dir/native-lib.cpp.o -c /path/to/sources/native-lib.cpp",
+  "file": "/path/to/sources/native-lib.cpp"
+}
+...
+```
+This contains all of the information we need to create a build cache key _except_ for the list of #include files. List of #includes are determined on first build by Ninja and stored in (.ninja_deps)[HelloWorld/app/.cxx/Debug/3z5c3158/x86/.ninja_deps] file.
 
 
 ### Android Gradle Plugin integrates C++ build with Java\Kotlin build
