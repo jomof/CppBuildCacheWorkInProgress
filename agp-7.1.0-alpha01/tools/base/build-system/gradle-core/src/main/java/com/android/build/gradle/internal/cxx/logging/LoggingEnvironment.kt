@@ -74,13 +74,30 @@ fun warnln(diagnosticCode: CxxDiagnosticCode, format: String, vararg args: Any) 
  * without --info flag.
  */
 fun lifecycleln(format: String, vararg args: Any) =
-        ThreadLoggingEnvironment.reportFormattedLifecycleToCurrentLogger(checkedFormat(format, args))
+    ThreadLoggingEnvironment.reportFormattedLifecycleToCurrentLogger(
+        checkedFormat(format, args),
+        null
+    )
+fun lifecycleln(diagnosticCode: CxxDiagnosticCode, format: String, vararg args: Any) =
+        ThreadLoggingEnvironment.reportFormattedLifecycleToCurrentLogger(
+            checkedFormat(format, args),
+            diagnosticCode
+        )
 
 /**
  * Report diagnostic/informational message.
  */
 fun infoln(format: String, vararg args: Any) =
-    ThreadLoggingEnvironment.reportFormattedInfoToCurrentLogger(checkedFormat(format, args))
+    ThreadLoggingEnvironment.reportFormattedInfoToCurrentLogger(
+        checkedFormat(format, args),
+        null
+    )
+
+fun infoln(diagnosticCode: CxxDiagnosticCode, format: String, vararg args: Any) =
+    ThreadLoggingEnvironment.reportFormattedInfoToCurrentLogger(
+        checkedFormat(format, args),
+        diagnosticCode
+    )
 
 /**
  * Log a structured message. The function [message] will only be called if there is a logger
@@ -222,14 +239,18 @@ abstract class ThreadLoggingEnvironment : LoggingEnvironment {
          * Report a non-error/non-warning message that should be displayed during normal gradle build
          * without --info flag.
          */
-        fun reportFormattedLifecycleToCurrentLogger(message: String) =
-            logger.log(lifecycleRecordOf(message))
+        fun reportFormattedLifecycleToCurrentLogger(
+            message: String,
+            diagnosticCode: CxxDiagnosticCode?
+        ) = logger.log(lifecycleRecordOf(message, diagnosticCode))
 
         /**
          * Report diagnostic/informational message.
          */
-        fun reportFormattedInfoToCurrentLogger(message: String) =
-            logger.log(infoRecordOf(message))
+        fun reportFormattedInfoToCurrentLogger(
+            message: String,
+            diagnosticCode: CxxDiagnosticCode?
+        ) = logger.log(infoRecordOf(message, diagnosticCode))
 
         /**
          * Log a structured (ProtoBuf) message
@@ -258,10 +279,10 @@ abstract class ThreadLoggingEnvironment : LoggingEnvironment {
                 logger.log(warnRecordOf(checkedFormat(format, args), warningDiagnosticCode))
             }
             override fun info(format: String, vararg args: Any) {
-                logger.log(infoRecordOf(checkedFormat(format, args)))
+                logger.log(infoRecordOf(checkedFormat(format, args), null))
             }
             override fun verbose(format: String, vararg args: Any) {
-                logger.log(infoRecordOf(checkedFormat(format, args)))
+                logger.log(infoRecordOf(checkedFormat(format, args), null))
             }
         }
     }

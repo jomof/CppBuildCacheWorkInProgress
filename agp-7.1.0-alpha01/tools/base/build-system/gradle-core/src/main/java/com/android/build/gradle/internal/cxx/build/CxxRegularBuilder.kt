@@ -233,6 +233,7 @@ class CxxRegularBuilder(val configurationModel: CxxConfigurationModel) : CxxBuil
             }
         }
 
+        // Perform after build cache actions.
         infoln("build complete")
     }
 
@@ -379,7 +380,7 @@ class CxxRegularBuilder(val configurationModel: CxxConfigurationModel) : CxxBuil
                 abi.ninjaLogFile.useLines { it.count() }
             } else 0
 
-            buildCache.cacheBuild(abi, buildStep.targetsFromDsl) {
+            buildCache.cacheBuild(abi) {
                 createProcessOutputJunction(
                     buildStep.outputFolder.resolve("android_gradle_build_command_$logFileSuffix.txt"),
                     buildStep.outputFolder.resolve("android_gradle_build_stdout_$logFileSuffix.txt"),

@@ -52,7 +52,19 @@ enum class CxxDiagnosticCode(val errorCode: Int) {
     COULD_NOT_EXTRACT_OUTPUT_FILE_FROM_CLANG_COMMAND(1407),
 
     // Build cache config messages
-    BUILD_CACHE_DISABLED_ACCESS(1500);
+    BUILD_CACHE_DISABLED_ACCESS(1500),
+    OBJECT_FILE_RESTORED(1501),
+    OBJECT_FILE_NOT_RESTORED_NO_DEPENDENCIES(1502),
+    OBJECT_FILE_NOT_RESTORED_ALREADY_EXISTED(1503),
+    OBJECT_FILE_NOT_RESTORED_CHANGED_INPUTS(1504),
+    ;
 
     val warningCode: Int get() = errorCode + 4000
+    val reportCode: Int get() = errorCode + 8000
+
+    companion object {
+        fun fromErrorCode(errorCode : Int) : CxxDiagnosticCode {
+            return values().single { it.errorCode == errorCode }
+        }
+    }
 }

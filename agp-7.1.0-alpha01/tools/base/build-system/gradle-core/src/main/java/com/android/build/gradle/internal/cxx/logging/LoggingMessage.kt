@@ -78,8 +78,8 @@ fun decodeLoggingMessage(
     decoder : StringDecoder) = encoded.decode(decoder)
 
 fun LoggingMessage.text() : String {
-    val codeHeader = when(diagnosticCode) {
-        0 -> "C/C++: "
+    val codeHeader = when {
+        diagnosticCode == 0 || level == LIFECYCLE || level == INFO  -> "C/C++: "
         else -> "[CXX$diagnosticCode] "
     }
     return when {
@@ -96,6 +96,9 @@ fun errorRecordOf(message: String, diagnosticCode: CxxDiagnosticCode?) =
 fun warnRecordOf(message: String, diagnosticCode: CxxDiagnosticCode?) =
     createLoggingMessage(WARN, message, diagnosticCode = diagnosticCode?.warningCode?:0)
 
-fun lifecycleRecordOf(message: String) = createLoggingMessage(LIFECYCLE, message)
-fun infoRecordOf(message: String) = createLoggingMessage(INFO, message)
+fun lifecycleRecordOf(message: String, diagnosticCode: CxxDiagnosticCode?) =
+    createLoggingMessage(LIFECYCLE, message, diagnosticCode = diagnosticCode?.reportCode?:0)
+
+fun infoRecordOf(message: String, diagnosticCode: CxxDiagnosticCode?) =
+    createLoggingMessage(INFO, message, diagnosticCode = diagnosticCode?.reportCode?:0)
 

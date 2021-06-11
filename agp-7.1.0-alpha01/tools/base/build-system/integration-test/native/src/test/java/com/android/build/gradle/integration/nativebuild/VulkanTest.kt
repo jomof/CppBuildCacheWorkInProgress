@@ -20,19 +20,39 @@ import com.android.build.gradle.integration.common.fixture.GradleTestProject
 import com.android.build.gradle.integration.common.fixture.GradleTestProject.Companion.DEFAULT_NDK_SIDE_BY_SIDE_VERSION
 import com.android.build.gradle.integration.common.truth.TruthHelper.assertThat
 import com.android.build.gradle.internal.cxx.configure.DEFAULT_CMAKE_SDK_DOWNLOAD_VERSION
+import com.android.build.gradle.internal.cxx.configure.DEFAULT_CMAKE_VERSION
+import com.android.build.gradle.internal.cxx.configure.OFF_STAGE_CMAKE_VERSION
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
 
-class VulkanTest {
+@RunWith(Parameterized::class)
+class VulkanTest(
+    private val cmakeVersionInDsl: String) {
+    companion object {
+        @Parameterized.Parameters(name = "cmake={0}")
+        @JvmStatic
+        fun data() = arrayOf("3.6.0", OFF_STAGE_CMAKE_VERSION, DEFAULT_CMAKE_VERSION)
+    }
+
     @get:Rule
     val project = GradleTestProject.builder()
-        .setCmakeVersion(DEFAULT_CMAKE_SDK_DOWNLOAD_VERSION)
         .setSideBySideNdkVersion(DEFAULT_NDK_SIDE_BY_SIDE_VERSION)
-        .setWithCmakeDirInLocalProp(true)
         .fromTestProject("vulkan").create()
 
+    @Before
+    fun setUp() {
+        val buildGradleFile = project.buildFile.resolveSibling("build.gradle")
+        buildGradleFile.writeText(
+            buildGradleFile
+            .readText()
+            .replace("{CMAKE_VERSION}", cmakeVersionInDsl))
+    }
+
     @Test
-    fun assembleDebug() {
+    fun `check basic Vulkan project`() {
         project.executor().run("assembleDebug")
 
         project.getApk(GradleTestProject.ApkType.DEBUG).use { apk ->

@@ -17,6 +17,7 @@
 package com.android.build.gradle.internal.cxx.logging
 
 import com.android.build.gradle.internal.cxx.gradle.generator.CxxConfigurationModel
+import com.android.build.gradle.internal.cxx.gradle.generator.NativeBuildOutputOptions
 import com.android.build.gradle.internal.cxx.logging.LoggingMessage.LoggingLevel.ERROR
 import com.android.build.gradle.internal.cxx.logging.LoggingMessage.LoggingLevel.INFO
 import com.android.build.gradle.internal.cxx.logging.LoggingMessage.LoggingLevel.LIFECYCLE
@@ -36,16 +37,21 @@ import java.io.File
 class IssueReporterLoggingEnvironment private constructor(
     private val issueReporter: IssueReporter,
     rootBuildGradleFolder: File,
+    private val logStructured: Boolean,
     private val internals: CxxDiagnosticCodesTrackingInternals?
 ) : PassThroughDeduplicatingLoggingEnvironment() {
-    private val structuredLogEncoder : CxxStructuredLogEncoder?
-    init {
+    private val structuredLogEncoder : CxxStructuredLogEncoder? by lazy {
         // Structured log is only written if user has manually created a folder
         // for it to go into.
         val structuredLogFolder = getCxxStructuredLogFolder(rootBuildGradleFolder)
-        structuredLogEncoder = if (structuredLogFolder.isDirectory) {
+        if (logStructured && !structuredLogFolder.isDirectory) {
+            logger.lifecycle("Writing C/C++ structured log to $structuredLogFolder")
+            structuredLogFolder.mkdirs()
+        }
+        if (structuredLogFolder.isDirectory) {
             val log = structuredLogFolder.resolve(
-                "log_${System.currentTimeMillis()}_${Thread.currentThread().id}.bin")
+                "log_${Thread.currentThread().id}.bin")
+                //"log_${System.currentTimeMillis()}_${Thread.currentThread().id}.bin")
             CxxStructuredLogEncoder(log)
         } else {
             null
@@ -61,7 +67,7 @@ class IssueReporterLoggingEnvironment private constructor(
     constructor(
         issueReporter: IssueReporter,
         rootBuildGradleFolder: File
-        ) : this(issueReporter, rootBuildGradleFolder, null)
+        ) : this(issueReporter, rootBuildGradleFolder, false, null)
 
     constructor(
         issueReporter: IssueReporter,
@@ -70,6 +76,7 @@ class IssueReporterLoggingEnvironment private constructor(
     ) : this(
         issueReporter,
         cxxConfigurationModel.variant.module.project.rootBuildGradleFolder,
+        cxxConfigurationModel.variant.module.outputOptions.contains(NativeBuildOutputOptions.LOG_STRUCTURED),
         CxxDiagnosticCodesTrackingInternals(
             analyticsService,
             cxxConfigurationModel,
@@ -97,7 +104,7 @@ class IssueReporterLoggingEnvironment private constructor(
             INFO -> logger.info(message.text())
             LIFECYCLE -> logger.lifecycle(message.text())
             WARN -> {
-                message.diagnosticCode?.let { internals?.cxxDiagnosticCodes?.add(it) }
+                message.diagnosticCode.let { internals?.cxxDiagnosticCodes?.add(it) }
                 issueReporter.reportWarning(
                     EXTERNAL_NATIVE_BUILD_CONFIGURATION,
                     message.text()
@@ -105,7 +112,7 @@ class IssueReporterLoggingEnvironment private constructor(
                 logger.warn(message.text())
             }
             ERROR -> {
-                message.diagnosticCode?.let { internals?.cxxDiagnosticCodes?.add(it) }
+                message.diagnosticCode.let { internals?.cxxDiagnosticCodes?.add(it) }
                 issueReporter.reportError(
                     EXTERNAL_NATIVE_BUILD_CONFIGURATION,
                     message.text()
@@ -116,14 +123,16 @@ class IssueReporterLoggingEnvironment private constructor(
     }
 
     override fun logStructured(message: (StringEncoder) -> GeneratedMessageV3) {
-        structuredLogEncoder?.write(message(structuredLogEncoder))
+        val encoder = structuredLogEncoder
+        encoder?.write(message(encoder))
     }
 
     override fun close() {
         try {
-            if (structuredLogEncoder != null) {
-                lifecycleln("Closing '${structuredLogEncoder.file}'")
-                structuredLogEncoder.close()
+            val encoder = structuredLogEncoder
+            if (encoder != null) {
+                lifecycleln("Closing structured log file '${encoder.file}'")
+                encoder.close()
             }
             if (internals != null) {
                 val variant = internals.cxxConfigurationModel.variant

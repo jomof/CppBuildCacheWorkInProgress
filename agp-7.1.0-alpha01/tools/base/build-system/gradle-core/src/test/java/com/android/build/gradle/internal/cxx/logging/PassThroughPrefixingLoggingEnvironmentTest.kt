@@ -53,7 +53,7 @@ class PassThroughPrefixingLoggingEnvironmentTest {
             PassThroughPrefixingLoggingEnvironment(File("my-file-inner")).use {
                 errorln("an error")
             }
-            assertThat(errors.single().toString()).isEqualTo("C/C++: my-file-inner my-tag : an error")
+            assertThat("[" + errors.single() + "]").isEqualTo("[C/C++: my-file-inner my-tag : an error]")
         }
     }
 }

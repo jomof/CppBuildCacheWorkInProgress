@@ -99,6 +99,7 @@ enum class NativeBuildOutputOptions {
     CONFIGURE_STDOUT, // Whether to forward the full native configure output to stdout.
     BUILD_STDOUT, // Whether to forward the full native build output to stdout.
     CLEAN_STDOUT, // Whether to forward the full native clean output to stdout.
+    LOG_STRUCTURED // Write granular structured log at possible performance expense
 }
 
 /**

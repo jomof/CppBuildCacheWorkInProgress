@@ -22,7 +22,34 @@ import org.gradle.internal.hash.FileHasher
 import java.io.File
 
 /**
- * Stubbed out C/C++ build cache implementation.
+ * C/C++ build cache implementation.
+ *
+ * Currently:
+ * - cache the result of compiling a .c or .cpp to object file
+ * - only for CMake\ninja
+ * - restore only files where we can determine #include dependencies
+ *   without calling clang ourself (see NOTE 1)
+ *
+ * Does not, but possibly could:
+ * - support ndk-build (see NOTE 2)
+ * - cache .o -> .a (archiver isn't slow enough to make this worthwhile)
+ * - cache .a -> .so (see NOTE 3)
+ * - determine unknown #include dependencies by calling clang ourself
+ *
+ * NOTE 1: We have the limitation that, in order to restore from build
+ * cache, we need to know all of the #include file hashes. For CMake\ninja
+ * this is done by parsing the .ninja_deps file created by ninja. This
+ * file only exists if ninja has already built this C++ file one time.
+ *
+ * NOTE 2: We should cache ndk-build. At the time this was written, we
+ * didn't have a perfgate test for ndk-build to validate the improvement.
+ * We should add that too.
+ *
+ * NOTE 3: There are a few issues with caching .o/.a -> .so:
+ * - Any change to any source file invalidates caching
+ * - We'd have to support .o -> .a caching (to get the same .a as before)
+ * - .so are very large and would make both load and store very heavy
+ * Gradle's own C++ build cache also doesn't cache .so results
  */
 class CxxBuildCache(
     private val buildCacheController: BuildCacheController,
@@ -38,32 +65,26 @@ class CxxBuildCache(
      * Enact C/C++ caching around [build] which is the ninja or ndk-build build
      * operation.
      * Cache for a particular [abi].
-     * Only load and store targets in [buildTargets]. If [buildTargets] is empty
      * then load and store all .cpp to .o translations.
      */
-    fun cacheBuild(abi : CxxAbiModel, buildTargets: Set<String>, build : () -> Unit) {
+    fun cacheBuild(abi : CxxAbiModel, build : () -> Unit) {
         if (!buildCacheController.isEnabled) {
             build()
             return
         }
-        // TODO(182809209) -- Enable SourceToObjectScope
-//        val cacheScope = SourceToObjectCacheScope(
-//            listOf(abi),
-//            buildTargets,
-//            buildCacheController,
-//            hashFile
-//        )
-        // TODO(182809209) -- Enable SourceToObjectScope
-        // cacheScope.restoreObjectFiles()
+        val cacheScope = SourceToObjectCacheScope(
+            abi,
+            buildCacheController,
+            hashFile
+        )
+        cacheScope.restoreObjectFiles()
         try {
             build()
         } catch (e : Exception) {
-            // TODO(182809209) -- Enable SourceToObjectScope
-            // cacheScope.storeObjectFiles(buildFailed = true)
+            cacheScope.storeObjectFiles(buildFailed = true)
             throw e
         }
-        // TODO(182809209) -- Enable SourceToObjectScope
-        // cacheScope.storeObjectFiles(buildFailed = false)
+        cacheScope.storeObjectFiles(buildFailed = false)
     }
 }
 
